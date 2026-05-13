@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<!--
+  Security Certification Roadmap — Interactive Mind Map
+  Fork of pauljerimy.com/security-certification-roadmap
+
+  API KEY SECURITY
+  ─────────────────────────────────────────────────────
+  No API key is stored in this file. The Anthropic key
+  required for the AI Path Planner is entered at runtime
+  by the user and stored in sessionStorage only.
+
+  sessionStorage is:
+    • Tab-scoped  — not shared across tabs
+    • Session-scoped — cleared automatically when the tab closes
+    • Never written to disk or transmitted except to api.anthropic.com
+
+  If you fork this repo: do NOT add your key to this file.
+  Do NOT add a .env file without adding it to .gitignore first.
+  Get a key at https://console.anthropic.com
+  ─────────────────────────────────────────────────────
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Cert Roadmap — Mind Map</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+:root{
+  --bg:#0c0e15;--surface:#131620;--sf2:#1a1d2a;--br:#22263a;--br2:#2a2f45;
+  --tx:#dce2f0;--tx2:#7a869e;--tx3:#3f4a5e;--ac:#4f8ef7;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+  --cn:#70AD47;--ci:#1aafaf;--ce:#fa8e36;--ca:#e4ac03;
+  --cm:#9aa8c0;--ct:#b06aff;--cs:#4a9fd5;--co:#c05050;
+  --lv0:#70AD47;--lv1:#fa8e36;--lv2:#3a7bd5;--lv3:#d05050;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--tx)}
+body{display:flex;flex-direction:column}
+/* ── TOPBAR ── */
+.tb{flex-shrink:0;height:50px;background:var(--surface);border-bottom:1px solid var(--br);
+  padding:0 14px;display:flex;align-items:center;gap:7px;z-index:50;
+  box-shadow:0 2px 24px rgba(0,0,0,.5);overflow-x:auto}
+.tb::-webkit-scrollbar{display:none}
+.logo{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;white-space:nowrap;flex-shrink:0}
+.logo b{color:var(--ac)}
+.td{width:1px;height:26px;background:var(--br2);flex-shrink:0}
+.sw{position:relative;flex:0 0 200px}
+.sw svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;stroke:var(--tx3);fill:none;pointer-events:none;stroke-width:2}
+#si{width:100%;padding:5px 8px 5px 26px;background:var(--sf2);border:1px solid var(--br2);
+  border-radius:4px;color:var(--tx);font-family:var(--mono);font-size:10px;outline:none}
+#si:focus{border-color:var(--ac)}
+#si::placeholder{color:var(--tx3)}
+.fs{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.fl{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.fb{padding:2px 7px;border-radius:20px;border:1px solid var(--br2);font-size:9px;
+  font-family:var(--mono);font-weight:700;cursor:pointer;background:transparent;
+  color:var(--tx2);white-space:nowrap;transition:all .1s;line-height:1.7}
+.fb:hover{border-color:var(--tx2);color:var(--tx)}
+.fb.on{color:#fff!important;border-color:transparent!important}
+.fb[data-d=all].on{background:var(--br2)!important;color:var(--tx)!important}
+.fb[data-d=network].on{background:var(--cn)}
+.fb[data-d=iam].on{background:var(--ci)}
+.fb[data-d=engineer].on{background:var(--ce);color:#111!important}
+.fb[data-d=asset].on{background:var(--ca);color:#111!important}
+.fb[data-d=mgmt].on{background:var(--cm);color:#111!important}
+.fb[data-d=test].on{background:var(--ct)}
+.fb[data-d=software].on{background:var(--cs)}
+.fb[data-d=ops].on{background:var(--co)}
+.fb[data-l=all].on{background:var(--br2)!important;color:var(--tx)!important}
+.fb[data-l=beginner].on{background:var(--lv0)}
+.fb[data-l=intermediate].on{background:var(--lv1);color:#111!important}
+.fb[data-l=advanced].on{background:var(--lv2)}
+.fb[data-l=expert].on{background:var(--lv3)}
+.fb[data-sc=all].on{background:var(--br2)!important;color:var(--tx)!important}
+.fb[data-sc=blue].on{background:#3a7bd5}
+.fb[data-sc=red].on{background:#d05050}
+#focBtn.on{background:var(--ac)!important;border-color:var(--ac)!important;color:#fff!important}
+.cnt{font-family:var(--mono);font-size:9px;color:var(--tx3);white-space:nowrap;flex-shrink:0}
+.clr{font-size:9px;color:var(--ac);background:none;border:none;cursor:pointer;
+  text-decoration:underline;display:none;flex-shrink:0;font-family:var(--mono)}
+.clr.show{display:block}
+.cmpbtn{padding:4px 11px;background:var(--ac);color:#fff;border:none;border-radius:4px;
+  font-size:9px;font-family:var(--mono);font-weight:700;cursor:pointer;white-space:nowrap;
+  flex-shrink:0;display:none}
+.cmpbtn.show{display:block}
+.cmpbtn:hover{filter:brightness(1.12)}
+/* ── CANVAS ── */
+.cw{flex:1;position:relative;overflow:hidden;cursor:grab}
+.cw:active{cursor:grabbing}
+#svg{width:100%;height:100%;display:block}
+/* ── LEGEND ── */
+.leg{position:absolute;bottom:14px;left:14px;background:rgba(12,14,21,.9);
+  backdrop-filter:blur(8px);border:1px solid var(--br2);border-radius:5px;
+  padding:8px 11px;font-size:9px;display:flex;flex-direction:column;gap:3px;z-index:10}
+.leg-t{font-family:var(--mono);font-size:8px;color:var(--tx3);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:1px}
+.leg-r{display:flex;align-items:center;gap:4px;color:var(--tx2)}
+.leg-d{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hint{position:absolute;bottom:14px;right:14px;font-size:8px;font-family:var(--mono);
+  color:var(--tx3);text-align:right;line-height:1.9;background:rgba(12,14,21,.75);
+  padding:5px 9px;border-radius:5px;border:1px solid var(--br)}
+/* ── COMPARE TRAY ── */
+.ctray{flex-shrink:0;background:var(--surface);border-top:1px solid var(--br2);
+  overflow:hidden;height:0;transition:height .22s ease;z-index:40}
+.ctray.open{height:185px}
+.ctin{padding:10px 14px;height:100%;display:flex;flex-direction:column;gap:7px}
+.cthead{display:flex;align-items:center;gap:7px}
+.cttl{font-family:var(--mono);font-size:10px;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em}
+.ctacts{display:flex;gap:5px;margin-left:auto}
+.cbtn{padding:3px 10px;border-radius:4px;font-size:9px;font-family:var(--mono);font-weight:700;
+  cursor:pointer;border:1px solid var(--br2);background:transparent;color:var(--tx2);transition:all .1s}
+.cbtn:hover{color:var(--tx);border-color:var(--tx2)}
+.cbtn.pri{background:var(--ac);color:#fff;border-color:transparent}
+.cbtn.pri:hover{filter:brightness(1.12)}
+.cbtn.pri:disabled{opacity:.35;cursor:default;filter:none}
+.cbtn.dan{color:var(--co)}
+.ctcds{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px}
+.ctcds::-webkit-scrollbar{height:3px}
+.ctcds::-webkit-scrollbar-track{background:var(--sf2)}
+.ctcds::-webkit-scrollbar-thumb{background:var(--br2);border-radius:2px}
+.ctcd{flex-shrink:0;width:146px;background:var(--sf2);border:1px solid var(--br2);
+  border-radius:4px;padding:7px 9px;position:relative}
+.ctcd-l{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.ctcd-s{font-size:10px;color:var(--tx2);line-height:1.4}
+.ctcd-x{position:absolute;top:4px;right:5px;background:none;border:none;color:var(--tx3);
+  cursor:pointer;font-size:12px;line-height:1}
+.ctcd-x:hover{color:var(--co)}
+.ctempty{color:var(--tx3);font-size:10px;font-family:var(--mono);padding:16px 0;text-align:center}
+/* ── MODAL ── */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .18s}
+.mov.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--br2);border-radius:10px;
+  width:100%;max-width:700px;max-height:88vh;display:flex;flex-direction:column;
+  overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.mhd{padding:15px 18px 11px;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;gap:10px;flex-shrink:0}
+.mtl{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tx)}
+.msl{font-size:11px;color:var(--tx2);margin-top:2px}
+.mcl{margin-left:auto;background:none;border:none;color:var(--tx3);font-size:17px;cursor:pointer;padding:0 2px}
+.mcl:hover{color:var(--tx)}
+.mbd{padding:15px 18px;overflow-y:auto;flex:1}
+.mft{padding:11px 18px;border-top:1px solid var(--br);display:flex;gap:7px;align-items:center;flex-shrink:0}
+.flbl{font-size:9px;font-family:var(--mono);color:var(--tx2);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:4px;display:block}
+.fg{margin-bottom:12px}
+.fi,.fta{width:100%;background:var(--sf2);border:1px solid var(--br2);border-radius:4px;
+  color:var(--tx);font-family:var(--sans);font-size:12px;padding:7px 9px;outline:none}
+.fi:focus,.fta:focus{border-color:var(--ac)}
+.fta{min-height:65px;resize:vertical;font-family:var(--mono);font-size:10px}
+.gchips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.gchip{padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mono);font-weight:700;border:1px solid}
+.pout{display:none;margin-top:4px}
+.pout.show{display:block}
+.spinner{width:22px;height:22px;border:2px solid var(--br2);border-top-color:var(--ac);
+  border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lmsg{text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--tx2)}
+.err{background:rgba(192,80,80,.1);border:1px solid rgba(192,80,80,.3);border-radius:4px;
+  padding:9px 11px;color:#e08080;font-size:10px;font-family:var(--mono)}
+.roadmap-out{background:var(--sf2);border:1px solid var(--br2);border-radius:5px;
+  padding:14px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--tx2);
+  white-space:pre-wrap;word-break:break-word;overflow-x:auto;max-height:340px;overflow-y:auto}
+.roadmap-out h3{color:var(--ac);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;margin-top:12px}
+.roadmap-out h3:first-child{margin-top:0}
+.roadmap-out strong{color:var(--tx);font-weight:700}
+/* ── TOOLTIP ── */
+.tt{position:fixed;z-index:400;background:rgba(8,10,16,.97);border:1px solid var(--br2);
+  border-radius:6px;padding:9px 12px;max-width:240px;pointer-events:none;
+  opacity:0;transition:opacity .08s;font-size:10px;line-height:1.5;
+  box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.tt.show{opacity:1}
+.ttn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.ttd{font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:4px}
+.ttb{color:var(--tx2);white-space:pre-wrap;font-size:9px}
+.ttlv{display:inline-block;margin-top:4px;padding:2px 6px;border-radius:20px;font-size:8px;font-family:var(--mono);font-weight:700;text-transform:uppercase}
+.tthint{margin-top:5px;font-size:8px;font-family:var(--mono);color:var(--tx3)}
+.ttdead{color:#f9a825;font-size:8px;margin-top:2px}
+/* NODE STYLES */
+.nc{cursor:pointer}
+.nc rect{transition:filter .08s,stroke-width .08s}
+.nc:hover rect,.nc:hover ellipse{filter:brightness(1.5) drop-shadow(0 0 5px currentColor)}
+.nc.sel rect,.nc.sel ellipse{stroke-width:2.5!important}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div class="tb">
+  <div class="logo">SEC<b>/CERT</b></div>
+  <div class="td"></div>
+  <div class="sw">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="si" placeholder="Search… ( / )" autocomplete="off">
+  </div>
+  <div class="td"></div>
+  <div class="fs" id="dfs">
+    <span class="fl">Domain&nbsp;</span>
+    <button class="fb on" data-d="all">ALL</button>
+    <button class="fb" data-d="network">NET</button>
+    <button class="fb" data-d="iam">IAM</button>
+    <button class="fb" data-d="engineer">ARCH</button>
+    <button class="fb" data-d="asset">ASSET</button>
+    <button class="fb" data-d="mgmt">GRC</button>
+    <button class="fb" data-d="test">AUDIT</button>
+    <button class="fb" data-d="software">SDEV</button>
+    <button class="fb" data-d="ops">OPS</button>
+  </div>
+  <div class="td"></div>
+  <div class="fs" id="lfs">
+    <span class="fl">Level&nbsp;</span>
+    <button class="fb on" data-l="all">ALL</button>
+    <button class="fb" data-l="beginner">ENTRY</button>
+    <button class="fb" data-l="intermediate">MID</button>
+    <button class="fb" data-l="advanced">ADV</button>
+    <button class="fb" data-l="expert">EXPERT</button>
+  </div>
+  <div class="td"></div>
+  <div class="fs">
+    <span class="fl">Ops&nbsp;</span>
+    <button class="fb on" data-sc="all">ALL</button>
+    <button class="fb" data-sc="blue">BLUE</button>
+    <button class="fb" data-sc="red">RED</button>
+  </div>
+  <div class="td"></div>
+  <button class="fb" id="focBtn" onclick="toggleFocus()">DECLUTTER</button>
+  <button class="clr" id="clr">reset</button>
+  <div class="cnt" id="cnt">— certs</div>
+  <button class="cmpbtn" id="cmpbtn" onclick="toggleTray()">COMPARE (<span id="cmpn">0</span>)</button>
+</div>
+
+<!-- CANVAS -->
+<div class="cw" id="cw">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cgrad" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#171c30"/><stop offset="100%" stop-color="#0c0e15"/>
+      </radialGradient>
+      <filter id="gl"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="gl2"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect id="svgbg" x="0" y="0" width="100%" height="100%" fill="url(#cgrad)"/>
+    <g id="zg">
+      <g id="ll"></g><g id="hl"></g><g id="nl"></g>
+    </g>
+  </svg>
+  <div class="leg">
+    <div class="leg-t">Level</div>
+    <div class="leg-r"><div class="leg-d" style="background:#70AD47"></div>Entry</div>
+    <div class="leg-r"><div class="leg-d" style="background:#fa8e36"></div>Intermediate</div>
+    <div class="leg-r"><div class="leg-d" style="background:#3a7bd5"></div>Advanced</div>
+    <div class="leg-r"><div class="leg-d" style="background:#d05050"></div>Expert</div>
+    <div style="height:6px"></div>
+    <div class="leg-t">Ops Type</div>
+    <div class="leg-r"><div class="leg-d" style="background:#3a7bd5"></div>Blue Team</div>
+    <div class="leg-r"><div class="leg-d" style="background:#d05050"></div>Red Team</div>
+  </div>
+  <div class="hint">Scroll = zoom · Drag = pan<br>Click = select · / = search<br>DECLUTTER = key certs only</div>
+</div>
+
+<!-- COMPARE TRAY -->
+<div class="ctray" id="ctray">
+  <div class="ctin">
+    <div class="cthead">
+      <span class="cttl">Compare Tray</span>
+      <div class="ctacts">
+        <button class="cbtn dan" onclick="clearTray()">Clear</button>
+        <button class="cbtn" onclick="toggleTray()">Hide</button>
+        <button class="cbtn pri" id="planBtn" onclick="openModal()" disabled>Plan Path ↗</button>
+      </div>
+    </div>
+    <div class="ctcds" id="ctcds">
+      <div class="ctempty" id="ctempty">Click any certification to add it here</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mov" id="mov" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mhd">
+      <div><div class="mtl">// CERTIFICATION PATH PLANNER</div>
+      <div class="msl">AI roadmap tailored to your goals — powered by Claude Sonnet</div></div>
+      <button class="mcl" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbd" id="mbd">
+      <div class="fg"><span class="flbl">Target certifications</span><div class="gchips" id="gchips"></div></div>
+      <div class="fg"><label class="flbl">Current certs & experience (optional)</label>
+        <textarea class="fta" id="fCur" placeholder="e.g. Security+, 2 years SOC, Python basics..."></textarea></div>
+      <div class="fg"><label class="flbl">Role goal (optional)</label>
+        <input type="text" class="fi" id="fRole" placeholder="e.g. Threat Intelligence Analyst, Cloud Security Engineer, Red Team Operator..."></div>
+      <div class="fg"><label class="flbl">Time available</label>
+        <input type="text" class="fi" id="fTime" placeholder="e.g. 12 months, 2 hrs/week..."></div>
+      <div class="fg" id="keyGroup">
+        <label class="flbl">Anthropic API key</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="position:relative;flex:1">
+            <input type="password" class="fi" id="fKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" style="padding-right:72px">
+            <button id="keyToggle" onclick="toggleKeyVis()" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:9px;font-family:var(--mono);color:var(--tx3);padding:2px 4px">SHOW</button>
+          </div>
+          <button class="cbtn" id="keySaveBtn" onclick="saveKey()" style="flex-shrink:0">Save</button>
+          <button class="cbtn dan" id="keyClearBtn" onclick="clearKey()" style="flex-shrink:0;display:none">Clear</button>
+        </div>
+        <div id="keyStatus" style="margin-top:5px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
+        <div style="margin-top:6px;padding:7px 9px;background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.2);border-radius:4px;font-size:9px;font-family:var(--mono);color:var(--tx3);line-height:1.7">
+          🔒 Key is stored in <strong style="color:var(--tx2)">sessionStorage only</strong> — clears when you close the tab.<br>
+          Never committed to the repo. Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--ac)">console.anthropic.com</a>
+        </div>
+      </div>
+      <div class="pout" id="pout"></div>
+    </div>
+    <div class="mft">
+      <button class="cbtn pri" id="genBtn" onclick="genPath()">Generate Roadmap ↗</button>
+      <button class="cbtn" onclick="closeModal()">Cancel</button>
+      <span style="font-size:8px;font-family:var(--mono);color:var(--tx3);margin-left:auto">claude-sonnet-4-20250514</span>
+    </div>
+  </div>
+</div>
+<div class="tt" id="tt"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+const CERTS = [
+  // ─── Network ───
+  {id:"CCIE_Sec",label:"CCIE Sec",domain:"network",level:"expert",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/expert/ccie-security.html",tip:"Cisco Certified Implementation Expert — Security\n$2,050 hands-on lab + ~$12k travel est.",key:true},
+  {id:"CCIE_Ent",label:"CCIE Ent",domain:"network",level:"expert",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/expert/ccie-security-v2.html",tip:"Cisco Certified Internetwork Expert — Enterprise Infrastructure\n~$2,050 + ~$12k travel"},
+  {id:"JNCIE_Sec",label:"JNCIE Sec",domain:"network",level:"expert",url:"https://www.juniper.net/us/en/training/certification/certification-tracks/junos-security-track/",tip:"Juniper Networks Certified Internet Expert, Security\n$1,400 hands-on lab"},
+  {id:"CCDE",label:"CCDE",domain:"network",level:"expert",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/expert/ccde.html",tip:"Cisco Certified Design Expert\n~$1,600 written + hands-on lab"},
+  {id:"FCX",label:"FCX",domain:"network",level:"expert",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcx_cybersecurity",tip:"Fortinet Certified Expert\n$400 written + $1,600 in-person lab"},
+  {id:"JNCIP_Sec",label:"JNCIP Sec",domain:"network",level:"advanced",url:"https://www.juniper.net/us/en/training/certification/certification-tracks/junos-security-track/",tip:"Juniper Networks Certified Internet Professional, Security\n$400 exam"},
+  {id:"PCNSE",label:"PCNSE",domain:"network",level:"advanced",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Palo Alto Networks Certified Network Security Engineer\n$175 exam",key:true},
+  {id:"FCSS_ZTA",label:"FCSS ZTA",domain:"network",level:"advanced",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcss_zta",tip:"Fortinet Certified Solution Specialist — Zero Trust Access\n$800 two exams",key:true},
+  {id:"CCNP_Sec",label:"CCNP Sec",domain:"network",level:"advanced",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/professional/ccnp-security-v2.html",tip:"Cisco Certified Network Professional — Security\n~$1,200 exam"},
+  {id:"CCNP_Ent",label:"CCNP Ent",domain:"network",level:"advanced",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/professional/ccnp-enterprise.html",tip:"Cisco Certified Network Professional — Enterprise\n~$600 exam"},
+  {id:"F5_CSE",label:"F5 CSE Sec",domain:"network",level:"advanced",url:"https://www.f5.com/services/training-and-certification",tip:"F5 Big-IP Certified Solution Expert — Security\n$135 exam"},
+  {id:"CCSM",label:"CCSM",domain:"network",level:"intermediate",url:"https://training-certifications.checkpoint.com/",tip:"Checkpoint Certified Security Master\n$350 exam"},
+  {id:"PCSAE",label:"PCSAE",domain:"network",level:"intermediate",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Palo Alto Certified Cloud Security Automation Engineer\n$350 exam"},
+  {id:"PCCSE",label:"PCCSE",domain:"network",level:"intermediate",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Prisma Certified Cloud Security Engineer\n$350 exam"},
+  {id:"FCSS_NS",label:"FCSS NS",domain:"network",level:"intermediate",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcss_network_security",tip:"Fortinet Certified Solution Specialist — Network Security\n$800 two exams"},
+  {id:"JNCIS_Sec",label:"JNCIS Sec",domain:"network",level:"intermediate",url:"https://www.juniper.net/us/en/training/certification/certification-tracks/junos-security-track/",tip:"Juniper Networks Certified Internet Specialist, Security\n$300 exam"},
+  {id:"CCSE_chk",label:"CCSE",domain:"network",level:"intermediate",url:"https://training-certifications.checkpoint.com/",tip:"Checkpoint Certified Security Expert\n$250 exam"},
+  {id:"F5_CTS_APM",label:"F5 CTS APM",domain:"network",level:"intermediate",url:"https://www.f5.com/services/training-and-certification",tip:"F5 Big-IP Certified Technical Specialist — APM\n$135 exam"},
+  {id:"FCP_NS",label:"FCP NS",domain:"network",level:"intermediate",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcp_network_security",tip:"Fortinet Certified Professional — Network Security\n$400 for 2 exams"},
+  {id:"CCNA",label:"CCNA",domain:"network",level:"intermediate",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/associate/ccna.html",tip:"Cisco Certified Network Associate\n~$330 exam",key:true},
+  {id:"CWSP",label:"CWSP",domain:"network",level:"intermediate",url:"https://www.cwnp.com/certifications/cwsp",tip:"CWNP Certified Wireless Security Professional\n$325 exam"},
+  {id:"JNCIA_Sec",label:"JNCIA Sec",domain:"network",level:"beginner",url:"https://www.juniper.net/us/en/training/certification/certification-tracks/junos-security-track/",tip:"Juniper Networks Certified Internet Associate, Security\n$200 exam"},
+  {id:"FCA",label:"FCA",domain:"network",level:"beginner",url:"https://training.fortinet.com/local/staticpage/view.php?page=fca_cybersecurity",tip:"Fortinet Certified Associate\nFree (3 courses + exam)"},
+  {id:"WCNA",label:"WCNA",domain:"network",level:"beginner",url:"https://www.wcnacertification.com/",tip:"Wireshark Certified Network Analyst\n$299 exam"},
+  {id:"CCSA_chk",label:"CCSA",domain:"network",level:"beginner",url:"https://training-certifications.checkpoint.com/",tip:"Checkpoint Certified Security Administrator\n$250 exam"},
+  {id:"Net_plus",label:"Net+",domain:"network",level:"beginner",url:"https://www.comptia.org/certifications/network",tip:"CompTIA Network+\n$369 exam",key:true},
+  {id:"FCF",label:"FCF",domain:"network",level:"beginner",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcf_cybersecurity",tip:"Fortinet Certified Fundamentals Cybersecurity\nFree",key:true},
+  {id:"PCCET",label:"PCCET",domain:"network",level:"beginner",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Palo Alto Networks Certified Cybersecurity Entry-level Technician\n$110 exam"},
+  {id:"PCNSA",label:"PCNSA",domain:"network",level:"beginner",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Palo Alto Networks Certified Network Security Administrator\n$155 exam",key:true},
+  {id:"PCDRA",label:"PCDRA",domain:"network",level:"beginner",url:"https://www.paloaltonetworks.com/services/education/certification",tip:"Palo Alto Networks Certified Detection and Remediation Analyst\n$155 exam"},
+  {id:"CCT",label:"CCT",domain:"network",level:"beginner",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/entry/technician-cct.html",tip:"Cisco Certified Technician\n$165 exam"},
+  {id:"MNSE",label:"MNSE",domain:"network",level:"beginner",url:"https://www.mosse-institute.com/certifications/mnse-network-security-essentials.html",tip:"Mosse Institute Network Security Essentials\n$450, 100% practical"},
+  // ─── IAM ───
+  {id:"CIMP",label:"CIMP",domain:"iam",level:"advanced",url:"https://www.identitymanagementinstitute.org/cimp/",tip:"IMI Certified Identity Management Professional\n$295 + Membership"},
+  {id:"FCSS_SASE",label:"FCSS SASE",domain:"iam",level:"advanced",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcss_SASE",tip:"Fortinet Certified Solution Specialist — SASE\n$800 two exams",key:true},
+  {id:"CIAM",label:"CIAM",domain:"iam",level:"intermediate",url:"https://www.identitymanagementinstitute.org/ciam/",tip:"IMI Certified Identity and Access Manager\n$390 exam"},
+  {id:"CIDPRO",label:"CIDPRO",domain:"iam",level:"intermediate",url:"https://idpro.org/cidpro/",tip:"IDPro Certified Identity Professional\n$700 exam",key:true},
+  {id:"CIGE",label:"CIGE",domain:"iam",level:"intermediate",url:"https://www.identitymanagementinstitute.org/cige/",tip:"IMI Certified Identity Governance Expert\n$395 exam"},
+  {id:"CIST",label:"CIST",domain:"iam",level:"beginner",url:"https://www.identitymanagementinstitute.org/cist/",tip:"IMI Certified Identity and Security Technologist\n$295 exam"},
+  {id:"CAMS",label:"CAMS",domain:"iam",level:"beginner",url:"https://www.identitymanagementinstitute.org/cams/",tip:"IMI Certified Access Management Specialist\n$195 exam"},
+  {id:"SC_300",label:"SC-300",domain:"iam",level:"beginner",url:"https://docs.microsoft.com/en-us/learn/certifications/identity-and-access-administrator/",tip:"Microsoft Certified: Identity and Access Administrator Associate\n$165 exam",key:true},
+  {id:"SC_900",label:"SC-900",domain:"iam",level:"beginner",url:"https://docs.microsoft.com/en-us/learn/certifications/security-compliance-and-identity-fundamentals/",tip:"Microsoft Certified: Security, Compliance, and Identity Fundamentals\n$99 exam",key:true},
+  {id:"SF_CIAMD",label:"SF CIAMD",domain:"iam",level:"intermediate",url:"https://trailhead.salesforce.com/",tip:"SalesForce Certified Identity and Access Management Designer\n$400 exam"},
+  // ─── Engineering / Architecture ───
+  {id:"CREST_CRTSA",label:"CREST CRTSA",domain:"engineer",level:"expert",url:"https://www.crest-approved.org/",tip:"CREST Registered Technical Security Architect\n$2,300 two exams (in-person UK)"},
+  {id:"VCDX_DCV",label:"VCDX DCV",domain:"engineer",level:"expert",url:"https://www.broadcom.com/support/education/vmware/certification",tip:"VMware Certified Design Expert — Datacenter Virtualization\n$3,995 exam + application",dead:true},
+  {id:"RHCA",label:"RHCA",domain:"engineer",level:"expert",url:"https://www.redhat.com/en/services/certification/rhca",tip:"Red Hat Certified Architect\n~$3,745 exam + travel"},
+  {id:"SABSA_SCM",label:"SABSA SCM",domain:"engineer",level:"expert",url:"https://sabsa.org/certification/",tip:"SABSA Chartered Security Architect — Master\n$3,750 exam + thesis"},
+  {id:"SC_100",label:"SC-100",domain:"engineer",level:"expert",url:"https://docs.microsoft.com/en-us/certifications/exams/sc-100",tip:"Microsoft Cybersecurity Architect\n$165 exam",key:true},
+  {id:"AWS_SAP",label:"AWS SAP",domain:"engineer",level:"expert",url:"https://aws.amazon.com/certification/certified-solutions-architect-professional/",tip:"AWS Certified Solutions Architect — Professional\n$300 exam"},
+  {id:"RHCE",label:"RHCE",domain:"engineer",level:"expert",url:"https://www.redhat.com/en/services/certification/rhce",tip:"Red Hat Certified Engineer\n$400 exam"},
+  {id:"GDAT",label:"GDAT",domain:"engineer",level:"expert",url:"https://www.giac.org/certification/defending-advanced-threats-gdat",tip:"GIAC Defending Advanced Threats\n$979 exam (SANS recommended)"},
+  {id:"VCIX_DCV",label:"VCIX DCV",domain:"engineer",level:"expert",url:"https://www.broadcom.com/support/education/vmware/certification",tip:"VMware Certified Implementation Expert — DCV\n$900 two exams",dead:true},
+  {id:"AZ_305",label:"AZ-305",domain:"engineer",level:"advanced",url:"https://docs.microsoft.com/en-us/learn/certifications/azure-solutions-architect",tip:"Microsoft Azure Solutions Architect Expert\n$330 exam",key:true},
+  {id:"CCSP",label:"CCSP",domain:"engineer",level:"advanced",url:"https://www.isc2.org/Certifications/CCSP",tip:"(ISC)2 Certified Cloud Security Professional\n$599 exam",key:true},
+  {id:"Google_PCSA",label:"Google PCSA",domain:"engineer",level:"advanced",url:"https://cloud.google.com/certification/cloud-architect",tip:"Google Professional Cloud Architect\n$200 exam"},
+  {id:"Google_PCSE",label:"Google PCSE",domain:"engineer",level:"advanced",url:"https://cloud.google.com/certification/cloud-security-engineer",tip:"Google Professional Cloud Security Engineer\n$200 exam"},
+  {id:"GCWN",label:"GCWN",domain:"engineer",level:"advanced",url:"https://www.giac.org/certifications/certified-windows-security-administrator-gcwn/",tip:"GIAC Certified Windows Security Administrator\n$979 exam"},
+  {id:"GCSA",label:"GCSA",domain:"engineer",level:"advanced",url:"https://www.giac.org/certification/cloud-security-automation-gcsa",tip:"GIAC Cloud Security Automation\n$979 exam"},
+  {id:"GPCS",label:"GPCS",domain:"engineer",level:"advanced",url:"https://www.giac.org/certifications/public-cloud-security-gpcs/",tip:"GIAC Public Cloud Security\n$979 exam"},
+  {id:"GCTD",label:"GCTD",domain:"engineer",level:"advanced",url:"https://www.giac.org/certifications/cloud-threat-detection-gctd/",tip:"GIAC Cloud Threat Detection\n$979 exam"},
+  {id:"GDSA",label:"GDSA",domain:"engineer",level:"advanced",url:"https://www.giac.org/certification/defensible-security-architecture-gdsa",tip:"GIAC Defensible Security Architecture\n$979 exam"},
+  {id:"SABSA_SCP",label:"SABSA SCP",domain:"engineer",level:"advanced",url:"https://sabsa.org/certification/",tip:"SABSA Chartered Security Architect — Practitioner\n$3,750 exam"},
+  {id:"LPIC3",label:"LPIC-3",domain:"engineer",level:"advanced",url:"https://www.lpi.org/our-certifications/lpic-3-303-overview",tip:"Linux Professional Institute Certified: 303 Security\n$200 exam"},
+  {id:"CACE",label:"CACE",domain:"engineer",level:"advanced",url:"https://www.exidacace.com/Apply/CACE",tip:"Excida IEC 62443 Certified Automation Cybersecurity Expert\n$700 exam"},
+  {id:"GRID",label:"GRID",domain:"engineer",level:"advanced",url:"https://www.giac.org/certification/response-industrial-defense-grid",tip:"GIAC Response and Industrial Defense\n$979 exam"},
+  {id:"VCP_DCV",label:"VCP DCV",domain:"engineer",level:"intermediate",url:"https://www.broadcom.com/support/education/vmware/certification",tip:"VMware Certified Professional — Datacenter Virtualization\n$375 exam",dead:true},
+  {id:"AZ_500",label:"AZ-500",domain:"engineer",level:"intermediate",url:"https://docs.microsoft.com/en-us/learn/certifications/azure-security-engineer",tip:"Microsoft Azure Security Engineer Associate\n$165 exam",key:true},
+  {id:"AZ_104",label:"AZ-104",domain:"engineer",level:"intermediate",url:"https://docs.microsoft.com/en-us/learn/certifications/azure-administrator",tip:"Microsoft Azure Administrator Associate\n$165 exam"},
+  {id:"MS_100",label:"MS-100",domain:"engineer",level:"advanced",url:"https://docs.microsoft.com/en-us/learn/certifications/m365-enterprise-administrator",tip:"Microsoft 365 Certified Enterprise Administrator Expert\n$165 exam"},
+  {id:"AWS_CSS",label:"AWS CSS",domain:"engineer",level:"intermediate",url:"https://aws.amazon.com/certification/certified-security-specialty/",tip:"AWS Certified Security — Specialty\n$150 exam",key:true},
+  {id:"AWS_SAA",label:"AWS SAA",domain:"engineer",level:"intermediate",url:"https://aws.amazon.com/certification/certified-solutions-architect-associate/",tip:"AWS Certified Solutions Architect — Associate\n$150 exam"},
+  {id:"FCSS_PCS",label:"FCSS PCS",domain:"engineer",level:"advanced",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcss_public_cloud_security",tip:"Fortinet Certified Solution Specialist — Public Cloud Security\n$400 exam"},
+  {id:"FCP_PCS",label:"FCP PCS",domain:"engineer",level:"intermediate",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcp_public_cloud_security",tip:"Fortinet Certified Professional — Public Cloud Security\n$400 for 2 exams"},
+  {id:"FCSS_SO",label:"FCSS SO",domain:"engineer",level:"intermediate",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcss_security_operations",tip:"Fortinet Certified Solution Specialist — Security Operations\n$400 exam"},
+  {id:"FCP_SO",label:"FCP SO",domain:"engineer",level:"intermediate",url:"https://training.fortinet.com/local/staticpage/view.php?page=fcp_security_operations",tip:"Fortinet Certified Professional — Security Operations\n$400 for 2 exams"},
+  {id:"RHCSA",label:"RHCSA",domain:"engineer",level:"intermediate",url:"https://www.redhat.com/en/services/certification/rhcsa",tip:"Red Hat Certified System Administrator\n$400 exam"},
+  {id:"LPIC2",label:"LPIC-2",domain:"engineer",level:"intermediate",url:"https://www.lpi.org/our-certifications/lpic-2-overview",tip:"Linux Professional Institute Certified: Linux Engineer\n$400 two exams"},
+  {id:"GCIP",label:"GCIP",domain:"engineer",level:"intermediate",url:"https://www.giac.org/certification/critical-infrastructure-protection-gcip",tip:"GIAC Critical Infrastructure Protection\n$979 exam"},
+  {id:"GICSP",label:"GICSP",domain:"engineer",level:"intermediate",url:"https://www.giac.org/certification/global-industrial-cyber-security-professional-gicsp",tip:"GIAC Global Industrial Cyber Security Professional\n$979 exam",key:true},
+  {id:"GCLD",label:"GCLD",domain:"engineer",level:"intermediate",url:"https://www.giac.org/certifications/cloud-security-essentials-gcld/",tip:"GIAC Cloud Security Essentials\n$979 exam",key:true},
+  {id:"CKS",label:"CKS",domain:"engineer",level:"intermediate",url:"https://www.cncf.io/certification/cks/",tip:"CNCF Certified Kubernetes Security Specialist\n$375 lab",key:true},
+  {id:"CKA",label:"CKA",domain:"engineer",level:"intermediate",url:"https://www.cncf.io/certification/cka/",tip:"CNCF Certified Kubernetes Administrator\n$375 lab"},
+  {id:"CKAD",label:"CKAD",domain:"engineer",level:"intermediate",url:"https://www.cncf.io/certification/ckad/",tip:"CNCF Certified Kubernetes Application Developer\n$375 lab"},
+  {id:"DCA",label:"DCA",domain:"engineer",level:"intermediate",url:"https://training.mirantis.com/dca-certification-exam/",tip:"Docker Certified Associate\n$195 exam"},
+  {id:"PDSO_CDP",label:"PDSO CDP",domain:"engineer",level:"intermediate",url:"https://www.practical-devsecops.com/certified-devsecops-professional/",tip:"PDSO Certified DevSecOps Professional\n$799 (exam + training)",key:true},
+  {id:"PDSO_CDE",label:"PDSO CDE",domain:"engineer",level:"intermediate",url:"https://www.practical-devsecops.com/certified-devsecops-expert",tip:"PDSO Certified DevSecOps Expert\n$1,199 (exam + training)"},
+  {id:"MDSO",label:"MDSO",domain:"engineer",level:"intermediate",url:"https://www.mosse-institute.com/certifications/mdso-certified-devsecops-engineer.html",tip:"Mosse Institute Certified DevSecOps Engineer\n$450"},
+  {id:"CSA_CCSK",label:"CSA CCSK",domain:"engineer",level:"beginner",url:"https://cloudsecurityalliance.org/education/ccsk/",tip:"Cloud Security Alliance Certificate of Cloud Security Knowledge\n$395 exam",key:true},
+  {id:"CSA_CGC",label:"CSA CGC",domain:"engineer",level:"intermediate",url:"https://cloudsecurityalliance.org/education/cloud-governance-and-compliance/",tip:"Cloud Security Alliance Cloud Governance & Compliance\n$315 exam"},
+  {id:"SABSA_SCF",label:"SABSA SCF",domain:"engineer",level:"intermediate",url:"https://sabsa.org/certification/",tip:"SABSA Chartered Security Architect — Foundation\n$3,750 exam"},
+  {id:"MCSE_c",label:"MCSE",domain:"engineer",level:"intermediate",url:"https://www.mosse-institute.com/certifications/mcse-certified-cloud-security-engineer.html",tip:"Mosse Institute Cloud Security Engineer\n$600 exam"},
+  {id:"LPIC1",label:"LPIC-1",domain:"engineer",level:"beginner",url:"https://www.lpi.org/our-certifications/lpic-1-overview",tip:"Linux Professional Institute Certified: Linux Administrator\n$400 two exams"},
+  {id:"KCNA",label:"KCNA",domain:"engineer",level:"beginner",url:"https://www.cncf.io/certification/kcna/",tip:"CNCF Kubernetes and Cloud Native Associate\n$250 exam"},
+  {id:"Linux_plus",label:"Linux+",domain:"engineer",level:"beginner",url:"https://www.comptia.org/certifications/linux",tip:"CompTIA Linux+\n$369 exam"},
+  {id:"Cloud_plus",label:"Cloud+",domain:"engineer",level:"beginner",url:"https://www.comptia.org/certifications/cloud",tip:"CompTIA Cloud+\n$369 exam"},
+  {id:"AZ_900",label:"AZ-900",domain:"engineer",level:"beginner",url:"https://docs.microsoft.com/en-us/learn/certifications/azure-fundamentals",tip:"Microsoft Azure Fundamentals\n$165 exam",key:true},
+  {id:"AWS_CP",label:"AWS CP",domain:"engineer",level:"beginner",url:"https://aws.amazon.com/certification/certified-cloud-practitioner/",tip:"AWS Certified Cloud Practitioner\n$100 exam",key:true},
+  {id:"Google_ACE",label:"Google ACE",domain:"engineer",level:"beginner",url:"https://cloud.google.com/certification/cloud-engineer",tip:"Google Associate Cloud Engineer\n$125 exam"},
+  {id:"Server_plus",label:"Server+",domain:"engineer",level:"beginner",url:"https://www.comptia.org/certifications/server",tip:"CompTIA Server+\n$319 exam"},
+  {id:"A_plus",label:"A+",domain:"engineer",level:"beginner",url:"https://www.comptia.org/certifications/a",tip:"CompTIA A+\n$253 exam"},
+  {id:"LFCA",label:"LFCA",domain:"engineer",level:"beginner",url:"https://training.linuxfoundation.org/certification/certified-it-associate/",tip:"Linux Foundation Certified IT Associate\n$200 exam"},
+  {id:"LFCS",label:"LFCS",domain:"engineer",level:"intermediate",url:"https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/",tip:"Linux Foundation Certified System Administrator\n$300 exam"},
+  {id:"MCSF",label:"MCSF",domain:"engineer",level:"beginner",url:"https://www.mosse-institute.com/certifications/mcsf-cloud-services-fundamentals.html",tip:"Mosse Institute Cloud Services Fundamentals\n$450"},
+  {id:"MSAF",label:"MSAF",domain:"engineer",level:"beginner",url:"https://www.mosse-institute.com/certifications/msaf-system-administration-fundamentals.html",tip:"Mosse Institute System Administration Fundamentals\n$450"},
+  {id:"AZ_220",label:"AZ-220",domain:"engineer",level:"beginner",url:"https://docs.microsoft.com/en-us/learn/certifications/azure-iot-developer-specialty",tip:"Azure IoT Developer Specialty\n$165 exam"},
+  {id:"CIOTSP",label:"CIOTSP",domain:"engineer",level:"beginner",url:"https://certnexus.com/certification/ciotsp/",tip:"CertNexus Certified Internet of Things Security Practitioner\n$250 exam"},
+  {id:"CACS",label:"CACS",domain:"engineer",level:"beginner",url:"https://www.exidacace.com/Apply/CACS",tip:"Excida IEC 62443 Certified Automation Cybersecurity Specialist\n$700 exam"},
+  {id:"Cloud_Ess",label:"Cloud Ess",domain:"engineer",level:"beginner",url:"https://www.comptia.org/certifications/cloud-essentials",tip:"CompTIA Cloud Essentials\n$138 exam"},
+  // ─── Asset ───
+  {id:"ASIS_CPP",label:"ASIS CPP",domain:"asset",level:"expert",url:"https://www.asisonline.org/certification/certified-protection-professional-cpp/",tip:"ASIS Certified Protection Professional\n$485 exam"},
+  {id:"CIPT",label:"CIPT",domain:"asset",level:"advanced",url:"https://iapp.org/certify/cipt/",tip:"IAPP Certified Information Privacy Technologist\n$550 exam",key:true},
+  {id:"CDPSE",label:"CDPSE",domain:"asset",level:"advanced",url:"https://www.isaca.org/credentialing/certified-data-privacy-solutions-engineer",tip:"ISACA Certified Data Privacy Solutions Engineer\n$880 application",key:true},
+  {id:"ASIS_APP",label:"ASIS APP",domain:"asset",level:"intermediate",url:"https://www.asisonline.org/certification/associate-protection-professional-app/",tip:"ASIS Associate Protection Professional\n$350 exam"},
+  {id:"CDP",label:"CDP",domain:"asset",level:"intermediate",url:"https://www.identitymanagementinstitute.org/cdp/",tip:"IMI Certified in Data Protection\n$395 exam"},
+  {id:"CIPA",label:"CIPA",domain:"asset",level:"intermediate",url:"https://www.identitymanagementinstitute.org/cipa/",tip:"IMI Certified Identity Protection Advisor\n$295 exam"},
+  {id:"DCPP",label:"DCPP",domain:"asset",level:"intermediate",url:"https://www.dsci.in/content/dsci-certified-privacy-professional-dcpp",tip:"DSCI Certified Privacy Professional\n$205 exam"},
+  {id:"CIPP",label:"CIPP",domain:"asset",level:"beginner",url:"https://iapp.org/certify/cipp",tip:"IAPP Certified Information Privacy Professional\n$550 exam",key:true},
+  {id:"EPDPF",label:"EPDPF",domain:"asset",level:"beginner",url:"https://www.exin.com/certifications/exin-privacy-and-data-protection-foundation-exam",tip:"EXIN Privacy and Data Protection Foundation\n$207 exam"},
+  {id:"EPDPE",label:"EPDPE",domain:"asset",level:"beginner",url:"https://www.exin.com/certifications/exin-privacy-and-data-protection-essentials-exam",tip:"EXIN Privacy and Data Protection Essentials\n$145 exam"},
+  {id:"CRFS",label:"CRFS",domain:"asset",level:"beginner",url:"https://www.identitymanagementinstitute.org/crfs/",tip:"IMI Certified Red Flag Specialist\n$295 exam"},
+  // ─── GRC / Risk Management ───
+  {id:"GSE",label:"GSE",domain:"mgmt",level:"expert",url:"https://www.giac.org/get-certified/giac-portfolio-certifications/#GSE",tip:"GIAC Security Expert\n~$7,475 for 10 exams"},
+  {id:"CISSP",label:"CISSP",domain:"mgmt",level:"expert",url:"https://www.isc2.org/Certifications/CISSP",tip:"(ISC)2 Certified Information Systems Security Professional\n$749 exam",key:true},
+  {id:"CISSP_Conc",label:"CISSP Conc",domain:"mgmt",level:"expert",url:"https://www.isc2.org/certifications#Specialized",tip:"(ISC)2 CISSP Concentrations (ISSAP/ISSEP/ISSMP)\n$599 exam"},
+  {id:"CISM",label:"CISM",domain:"mgmt",level:"expert",url:"https://www.isaca.org/credentialing/cism",tip:"ISACA Certified Information Security Manager\n$760 exam",key:true},
+  {id:"CCISO",label:"CCISO",domain:"mgmt",level:"expert",url:"https://ciso.eccouncil.org/cciso-certification/",tip:"EC Council Certified Information Security Officer\n$3,150 (course required)"},
+  {id:"ITIL_Master",label:"ITIL Master",domain:"mgmt",level:"expert",url:"https://www.axelos.com/certifications/itil-certifications/itil-master",tip:"ITIL Master\n$4,000 interview"},
+  {id:"PMP",label:"PMP",domain:"mgmt",level:"expert",url:"https://www.pmi.org/certifications/project-management-pmp",tip:"PMI Project Management Professional\n$555 exam"},
+  {id:"TOGAF",label:"TOGAF",domain:"mgmt",level:"expert",url:"https://www.opengroup.org/certifications/togaf",tip:"OpenGroup TOGAF Certified\n$360 exam"},
+  {id:"GSTRT",label:"GSTRT",domain:"mgmt",level:"expert",url:"https://www.giac.org/certification/gstrt",tip:"GIAC Strategic Planning, Policy and Leadership\n$979 exam"},
+  {id:"NCSC_CCPLP",label:"NCSC CCPLP",domain:"mgmt",level:"expert",url:"https://www.ncsc.gov.uk/information/about-certified-professional-scheme",tip:"NCSC Certified Cybersecurity Professional — Lead Practitioner\n$1,388 interview"},
+  {id:"GSP",label:"GSP",domain:"mgmt",level:"advanced",url:"https://www.giac.org/get-certified/giac-portfolio-certifications/#gsp",tip:"GIAC Security Professional\n~$3,735 for 5 exams"},
+  {id:"GISP",label:"GISP",domain:"mgmt",level:"advanced",url:"https://www.giac.org/certification/gisp",tip:"GIAC Information Security Professional\n$979 exam"},
+  {id:"GSLC",label:"GSLC",domain:"mgmt",level:"advanced",url:"https://www.giac.org/certification/gslc",tip:"GIAC Security Leadership Certification\n$979 exam"},
+  {id:"CRISC",label:"CRISC",domain:"mgmt",level:"advanced",url:"https://www.isaca.org/credentialing/crisc",tip:"ISACA Certified in Risk and Information Systems Control\n$760 exam",key:true},
+  {id:"CGRC",label:"CGRC",domain:"mgmt",level:"advanced",url:"https://www.isc2.org/Certifications/CGRC",tip:"(ISC)2 Certified in Governance, Risk and Compliance\n$599 exam",key:true},
+  {id:"CGEIT",label:"CGEIT",domain:"mgmt",level:"advanced",url:"https://www.isaca.org/credentialing/cgeit",tip:"ISACA Certified in the Governance of Enterprise IT\n$760 exam"},
+  {id:"CASP_plus",label:"CASP+",domain:"mgmt",level:"advanced",url:"https://www.comptia.org/certifications/comptia-advanced-security-practitioner",tip:"CompTIA Advanced Security Practitioner+\n$509 exam",key:true},
+  {id:"ITIL_MP",label:"ITIL MP",domain:"mgmt",level:"advanced",url:"https://www.axelos.com/certifications/itil-certifications/itil-managing-professional-itil-4",tip:"ITIL Managing Professional\n$9,600 four course exams"},
+  {id:"ITIL_SL",label:"ITIL SL",domain:"mgmt",level:"advanced",url:"https://www.axelos.com/certifications/itil-certifications/itil-strategic-leader-itil-4",tip:"ITIL Strategic Leader\n$4,800 two course exams"},
+  {id:"PgMP",label:"PgMP",domain:"mgmt",level:"expert",url:"https://www.pmi.org/certifications/types/program-management-pgmp",tip:"PMI Program Management Professional\n$1,000 exam"},
+  {id:"PECB_27001LI",label:"PECB 27001LI",domain:"mgmt",level:"advanced",url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-27001/iso-iec-27001-lead-implementer",tip:"PECB ISO/IEC 27001 Lead Implementer\n$930 exam (course required)",key:true},
+  {id:"PECB_27001F",label:"PECB 27001F",domain:"mgmt",level:"beginner",url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-27001/iso-iec-27001-foundation",tip:"PECB ISO/IEC 27001 Foundation\n$500–749 exam"},
+  {id:"MGRC",label:"MGRC",domain:"mgmt",level:"intermediate",url:"https://www.mosse-institute.com/certifications/mgrc-certified-grc-practitioner.html",tip:"Mosse Institute Certified GRC Practitioner\n$450, 100% practical"},
+  {id:"GRCP",label:"GRCP",domain:"mgmt",level:"intermediate",url:"https://www.oceg.org/certifications/grc-professional-certification/",tip:"OCEG GRC Professional\n$399/12-month license"},
+  {id:"GRCA",label:"GRCA",domain:"mgmt",level:"intermediate",url:"https://www.oceg.org/certifications/grc-audit-certification/",tip:"OCEG GRC Auditor\n$399/12-month license"},
+  {id:"CC",label:"CC",domain:"mgmt",level:"beginner",url:"https://www.isc2.org/Certifications/CC",tip:"ISC2 Certified in Cybersecurity\nFree exam",key:true},
+  {id:"SSCP",label:"SSCP",domain:"mgmt",level:"beginner",url:"https://www.isc2.org/Certifications/SSCP",tip:"(ISC)2 Systems Security Certified Practitioner\n$249 exam",key:true},
+  {id:"Sec_plus",label:"Security+",domain:"mgmt",level:"beginner",url:"https://www.comptia.org/certifications/security",tip:"CompTIA Security+\n$404 exam",key:true,key:true},
+  {id:"GSEC",label:"GSEC",domain:"mgmt",level:"beginner",url:"https://www.giac.org/certification/security-essentials-gsec",tip:"GIAC Security Essentials\n$979 exam",key:true},
+  {id:"GISF",label:"GISF",domain:"mgmt",level:"beginner",url:"https://www.giac.org/certification/information-security-fundamentals-gisf",tip:"GIAC Information Security Fundamentals\n$979 exam"},
+  {id:"ITIL_Fdn",label:"ITIL Fdn",domain:"mgmt",level:"beginner",url:"https://www.axelos.com/certifications/itil-certifications/itil-foundation",tip:"ITIL Foundation\n$383 exam",key:true},
+  {id:"TOGAF_Fdn",label:"TOGAF Fdn",domain:"mgmt",level:"beginner",url:"https://www.opengroup.org/certifications/togaf",tip:"OpenGroup TOGAF Foundation\n$360 exam",key:true},
+  // ─── Audit / Testing ───
+  {id:"GSNA",label:"GSNA",domain:"test",level:"expert",url:"https://www.giac.org/certification/gsna",tip:"GIAC Systems and Network Auditor\n$979 exam"},
+  {id:"CISA",label:"CISA",domain:"test",level:"advanced",url:"https://www.isaca.org/credentialing/cisa",tip:"ISACA Certified Information Systems Auditor\n$760 exam",key:true},
+  {id:"GCCC",label:"GCCC",domain:"test",level:"advanced",url:"https://www.giac.org/certification/critical-controls-certification-gccc",tip:"GIAC Critical Controls Certification\n$979 exam",key:true},
+  {id:"GMON",label:"GMON",domain:"test",level:"advanced",url:"https://www.giac.org/certification/continuous-monitoring-certification-gmon",tip:"GIAC Continuous Monitoring\n$979 exam",key:true},
+  {id:"GCIA",label:"GCIA",domain:"test",level:"advanced",url:"https://www.giac.org/certification/certified-intrusion-analyst-gcia",tip:"GIAC Certified Intrusion Analyst\n$979 exam",key:true},
+  {id:"PCI_QSA",label:"PCI QSA",domain:"test",level:"advanced",url:"https://www.pcisecuritystandards.org/assessors_and_solutions/become_qsa/",tip:"PCI Qualified Security Assessor\n$3,000 required course",key:true},
+  {id:"CTPRA",label:"CTPRA",domain:"test",level:"advanced",url:"https://sharedassessments.org/ctpra/",tip:"Certified Third-Party Risk Assessor\n$1,295 course"},
+  {id:"CTPRP",label:"CTPRP",domain:"test",level:"intermediate",url:"https://sharedassessments.org/ctprp/",tip:"Certified Third-Party Risk Professional\n$1,295 course"},
+  {id:"IIA_CIA",label:"IIA CIA",domain:"test",level:"intermediate",url:"https://na.theiia.org/certification/CIA-Certification/",tip:"Institute of Internal Auditors Certified Internal Auditor\n$1,315 three exams"},
+  {id:"PECB_27001LA",label:"PECB 27001LA",domain:"test",level:"advanced",url:"https://pecb.com/en/education-and-certification-for-individuals/iso-iec-27001/iso-iec-27001-lead-auditor",tip:"PECB ISO/IEC 27001 Lead Auditor\n$930 exam (course required)"},
+  {id:"EXIN_CIT",label:"EXIN CIT",domain:"test",level:"beginner",url:"https://www.exin.com/certifications/exin-cyber-and-it-security",tip:"EXIN Cyber & IT Security\n$225 exam"},
+  // ─── Software Security ───
+  {id:"CSSLP",label:"CSSLP",domain:"software",level:"advanced",url:"https://www.isc2.org/Certifications/CSSLP",tip:"(ISC)2 Certified Secure Software Lifecycle Professional\n$599 exam",key:true},
+  {id:"GWEB",label:"GWEB",domain:"software",level:"advanced",url:"https://www.giac.org/certification/certified-web-application-defender-gweb",tip:"GIAC Certified Web Application Defender\n$979 exam",key:true},
+  {id:"GMLE",label:"GMLE",domain:"software",level:"advanced",url:"https://www.giac.org/certifications/machine-learning-engineer-gmle/",tip:"GIAC Machine Learning Engineer\n$979 exam"},
+  {id:"DevNet_Pro",label:"DevNet Pro",domain:"software",level:"advanced",url:"https://www.cisco.com/site/us/en/learn/training-certifications/certifications/devnet/professional/",tip:"Cisco DevNet Professional\n$1,200 two exams",key:true},
+  {id:"CASE",label:"CASE",domain:"software",level:"intermediate",url:"https://www.eccouncil.org/programs/certified-application-security-engineer-case/",tip:"EC Council Certified Application Security Engineer\n$550 exam"},
+  {id:"SOG_CAP",label:"SOG CAP",domain:"software",level:"beginner",url:"https://secops.group/product/certified-application-security-practitioner/",tip:"SecOps Group Certified AppSec Practitioner\n$249 exam"},
+  {id:"DevNet_A",label:"DevNet A",domain:"software",level:"beginner",url:"https://www.cisco.com/site/us/en/learn/training-certifications/certifications/devnet/associate/",tip:"Cisco DevNet Associate\n$300 exam"},
+  {id:"MASE",label:"MASE",domain:"software",level:"beginner",url:"https://www.mosse-institute.com/certifications/mase-certified-application-security-engineer.html",tip:"Mosse Institute Certified Application Security Engineer\n$450",key:true},
+  {id:"CCSC",label:"CCSC",domain:"software",level:"beginner",url:"https://certnexus.com/certification/cyber-secure-coder/",tip:"CertNexus Cyber Secure Coder\n$300 exam"},
+  {id:"S_SPF",label:"S-SPF",domain:"software",level:"beginner",url:"https://www.seco-institute.org/certifications/secure-software-certification-track/",tip:"SECO Secure Programming Foundation\n$460 exam"},
+  {id:"S_CSPL",label:"S-CSPL",domain:"software",level:"advanced",url:"https://www.seco-institute.org/certifications/certified-secure-software-developer/",tip:"SECO Secure Programming Certified Leader\n$460 exam"},
+  // ─── Security Operations — Blue Team ───
+  {id:"GCTI",label:"GCTI",domain:"ops",level:"expert",subcat:"blue",url:"https://www.giac.org/certification/gcti",tip:"GIAC Cyber Threat Intelligence\n$979 exam",key:true},
+  {id:"GCFA",label:"GCFA",domain:"ops",level:"expert",subcat:"blue",url:"https://www.giac.org/certification/gcfa",tip:"GIAC Certified Forensic Analyst\n$979 exam",key:true},
+  {id:"GNFA",label:"GNFA",domain:"ops",level:"expert",subcat:"blue",url:"https://www.giac.org/certification/network-forensic-analyst-gnfa",tip:"GIAC Network Forensic Analyst\n$979 exam"},
+  {id:"GREM",label:"GREM",domain:"ops",level:"expert",subcat:"blue",url:"https://www.giac.org/certifications/reverse-engineering-malware-grem/",tip:"GIAC Reverse Engineering Malware\n$979 exam"},
+  {id:"GIME",label:"GIME",domain:"ops",level:"expert",subcat:"blue",url:"https://www.giac.org/certifications/ios-macos-examiner-gime/",tip:"GIAC iOS and macOS Examiner\n$979 exam"},
+  {id:"CFCE",label:"CFCE",domain:"ops",level:"expert",subcat:"blue",url:"https://www.iacis.com/certification/",tip:"IACIS Certified Forensic Computer Examiner\n$750 four peer-reviewed exams"},
+  {id:"CSFA",label:"CSFA",domain:"ops",level:"expert",subcat:"blue",url:"https://www.csiac.org/certification/cybersecurity-forensic-analyst-csfa-certification/",tip:"CSIAC CyberSecurity Forensic Analyst\n$750 exam & lab"},
+  {id:"CFSR",label:"CFSR",domain:"ops",level:"expert",subcat:"blue",url:"https://www.opentext.com/products-and-solutions/services/training-and-learning-services/encase-training/",tip:"OpenText Certified Forensic Security Responder\n$250 written exam & lab"},
+  {id:"CCD",label:"CCD",domain:"ops",level:"expert",subcat:"blue",url:"https://cyberdefenders.org/blue-team-training/courses/certified-cyberdefender-certification/",tip:"Certified CyberDefender\n$800 course (2 exam attempts)"},
+  {id:"MTIA",label:"MTIA",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mtia-certified-threat-intelligence-analyst.html",tip:"Mosse Institute Certified Threat Intelligence Analyst\n$450, 100% practical"},
+  {id:"BTL2",label:"BTL2",domain:"ops",level:"advanced",subcat:"blue",url:"https://securityblue.team/btl2/",tip:"Security Blue Team Level 2\n$2,190 course"},
+  {id:"GCFE",label:"GCFE",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certification/gcfe",tip:"GIAC Certified Forensics Examiner\n$979 exam"},
+  {id:"GCIH",label:"GCIH",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certification/gcih",tip:"GIAC Certified Incident Handler\n$979 exam",key:true,key:true},
+  {id:"GCED",label:"GCED",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certification/certified-enterprise-defender-gced",tip:"GIAC Certified Enterprise Defender\n$979 exam"},
+  {id:"GCFR",label:"GCFR",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certifications/cloud-forensics-responder-gcfr/",tip:"GIAC Cloud Forensics Responder\n$979 exam"},
+  {id:"GCDA",label:"GCDA",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certification/certified-detection-analyst-gcda",tip:"GIAC Certified Detection Analyst\n$979 exam"},
+  {id:"GEIR",label:"GEIR",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certifications/enterprise-incident-responder-geir/",tip:"GIAC Enterprise Incident Response\n$979 exam"},
+  {id:"GXFA",label:"GX-FA",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certifications/experienced-forensics-analyst-gxfa/",tip:"GIAC Experienced Forensics Analyst\n$1,299 exam"},
+  {id:"GASF",label:"GASF",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certification/advanced-smartphone-forensics-gasf",tip:"GIAC Advanced Smartphone Forensics\n$979 exam"},
+  {id:"eCTHP",label:"eCTHP",domain:"ops",level:"advanced",subcat:"blue",url:"https://security.ine.com/certifications/ecthp-certification/",tip:"INE Certified Threat Hunting Professional\n$400 lab",dead:true},
+  {id:"Cisco_COP",label:"Cisco COP",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/professional/cyberops-professional.html",tip:"Cisco Certified CyberOps Professional\n$700 two exams"},
+  {id:"CREST_CCTIM",label:"CREST CCTIM",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-threat-intelligence-manager",tip:"CREST Certified Threat Intelligence Manager\n$2,480 three exams"},
+  {id:"CREST_CRIA",label:"CREST CRIA",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-registered-intrusion-analyst",tip:"CREST Registered Intrusion Analyst\n$612 exam & lab"},
+  {id:"CREST_CCNIA",label:"CREST CCNIA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-network-intrusion-analyst",tip:"CREST Certified Network Intrusion Analyst\n$2,481 exam & essay"},
+  {id:"CREST_CRTIA",label:"CREST CRTIA",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-registered-threat-intelligence-analyst",tip:"CREST Registered Threat Intelligence Analyst\n$615 two exams"},
+  {id:"SC_200",label:"SC-200",domain:"ops",level:"intermediate",subcat:"blue",url:"https://docs.microsoft.com/en-us/learn/certifications/security-operations-analyst/",tip:"Microsoft Certified: Security Operations Analyst Associate\n$165 exam",key:true},
+  {id:"CySA_plus",label:"CySA+",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.comptia.org/certifications/cybersecurity-analyst",tip:"CompTIA Cybersecurity Analyst+\n$404 exam",key:true},
+  {id:"CHFI",label:"CHFI",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.eccouncil.org/programs/computer-hacking-forensic-investigator-chfi/",tip:"EC Council Computer Hacking Forensics Investigator\n$650 exam"},
+  {id:"CTIA",label:"CTIA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.eccouncil.org/programs/certified-threat-intelligence-analyst-ctia/",tip:"EC Council Certified Threat Intelligence Analyst\n$450 exam"},
+  {id:"ECIH",label:"ECIH",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.eccouncil.org/programs/ec-council-certified-incident-handler-ecih/",tip:"EC Council Certified Incident Handler\n$300 exam"},
+  {id:"BTL1",label:"BTL1",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.securityblue.team/why-btl1/",tip:"Security Blue Team Level 1\n$660 course",key:true},
+  {id:"HTB_CDSA",label:"HTB CDSA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://academy.hackthebox.com/preview/certifications/htb-certified-defensive-security-analyst",tip:"Hack the Box Certified Defensive Security Analyst\n$145 modules + $210 exam",key:true},
+  {id:"OSDA",label:"OSDA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Defense Analyst\n$2,499 exam (verify at offsec.com)"},
+  {id:"MTH",label:"MTH",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mth-certified-threat-hunter.html",tip:"Mosse Institute Certified Threat Hunter\n$450"},
+  {id:"MDFIR",label:"MDFIR",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mdfir-certified-dfir-specialist.html",tip:"Mosse Institute Certified DFIR Specialist\n$450"},
+  {id:"MBT",label:"MBT",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mbt-certified-blue-teamer.html",tip:"Mosse Institute Certified Blue Teamer\n$450"},
+  {id:"eCIR",label:"eCIR",domain:"ops",level:"intermediate",subcat:"blue",url:"https://security.ine.com/certifications/ecir-certification/",tip:"INE Certified Incident Responder\n$400 lab"},
+  {id:"eCDFP",label:"eCDFP",domain:"ops",level:"intermediate",subcat:"blue",url:"https://security.ine.com/certifications/ecdfp-certification/",tip:"INE Certified Digital Forensics Professional\n$400 lab",dead:true},
+  {id:"EnCE",label:"EnCE",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.opentext.com/products-and-solutions/services/training-and-learning-services/encase-training/",tip:"OpenText EnCase Certified Examiner\n$200 two exams"},
+  {id:"ACE_fd",label:"ACE",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.exterro.com/",tip:"AccessData/Exterro Certified Examiner\n⚠ Acquired by Exterro — verify current status",dead:true},
+  {id:"Cisco_COA",label:"Cisco COA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/associate/cyberops-associate.html",tip:"Cisco Certified CyberOps Associate\n~$325 exam"},
+  {id:"GPYC",label:"GPYC",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.giac.org/certification/python-coder-gpyc",tip:"GIAC Python Coder\n$979 exam"},
+  {id:"GSOC",label:"GSOC",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.giac.org/certifications/security-operations-certified-gsoc/",tip:"GIAC Security Operations Certified\n$979 exam"},
+  {id:"GBFA",label:"GBFA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.giac.org/certification/gbfa",tip:"GIAC Battlefield Forensics and Acquisition\n$979 exam"},
+  {id:"GOSI",label:"GOSI",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.giac.org/certification/open-source-intelligence-gosi",tip:"GIAC Open Source Intelligence\n$979 exam"},
+  {id:"OSIP",label:"OSIP",domain:"ops",level:"intermediate",subcat:"blue",url:"https://inteltechniques.com/training-osip.html",tip:"IntelTechniques OSINT Professional\n$300 practical exam"},
+  {id:"MAD_CTI",label:"MAD CTI",domain:"ops",level:"intermediate",subcat:"blue",url:"https://mitre-engenuity.org/mad/",tip:"MITRE ATT&CK Defender — Cyber Threat Intelligence\n$299/year",key:true},
+  {id:"MAD_SOCA",label:"MAD SOCA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://mitre-engenuity.org/mad/",tip:"MITRE ATT&CK Defender — SOC Assessment\n$299/year"},
+  {id:"SC_400",label:"SC-400",domain:"ops",level:"intermediate",subcat:"blue",url:"https://docs.microsoft.com/en-us/learn/certifications/information-protection-administrator/",tip:"Microsoft Certified Information Protection Administrator Associate\n$165 exam"},
+  {id:"EDRP",label:"EDRP",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.eccouncil.org/programs/disaster-recovery-professional-edrp/",tip:"EC Council Disaster Recovery Professional\n$450 exam"},
+  {id:"CFR",label:"CFR",domain:"ops",level:"intermediate",subcat:"blue",url:"https://certnexus.com/certification/cybersec-first-responder/",tip:"CertNexus CyberSec First Responder\n$250 exam"},
+  {id:"S_TA",label:"S-TA",domain:"ops",level:"intermediate",subcat:"blue",url:"https://www.seco-institute.org/get-trained/cyber-defense-track/",tip:"SECO Certified Threat Analyst\n$550 exam"},
+  {id:"CSX_P",label:"CSX-P",domain:"ops",level:"intermediate",subcat:"blue",url:"https://cybersecurity.isaca.org/csx-certifications/",tip:"ISACA Cybersecurity Practitioner\n$549 lab"},
+  {id:"GCFR2",label:"GCFR",domain:"ops",level:"advanced",subcat:"blue",url:"https://www.giac.org/certifications/cloud-forensics-responder-gcfr/",tip:"GIAC Cloud Forensics Responder\n$979 exam"},
+  {id:"CCOA",label:"CCOA",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.isaca.org/credentialing/ccoa",tip:"ISACA Certified Cybersecurity Operations Analyst\n$760 exam"},
+  {id:"CSA_soc",label:"CSA",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.eccouncil.org/programs/certified-soc-analyst-csa/",tip:"EC Council Certified SOC Analyst\n$550 exam",key:true},
+  {id:"CND",label:"CND",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.eccouncil.org/programs/certified-network-defender-cnd/",tip:"EC Council Certified Network Defender\n$550 exam"},
+  {id:"GFACT",label:"GFACT",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.giac.org/certifications/foundational-cybersecurity-technologies-gfact/",tip:"GIAC Foundational Cybersecurity Technologies\n$979 exam"},
+  {id:"MOIS",label:"MOIS",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mois-certified-osint-expert.html",tip:"Mosse Institute OSINT Expert\n$450"},
+  {id:"MRCI",label:"MRCI",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mrci-remote-cybersecurity-internship.html",tip:"Mosse Institute Remote Cybersecurity Internship\n$49"},
+  {id:"MICS",label:"MICS",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mics-introduction-to-cyber-security.html",tip:"Mosse Institute Introduction to Cyber Security\nFree"},
+  {id:"ECSS",label:"ECSS",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.eccouncil.org/programs/certified-security-specialist-ecss/",tip:"EC Council Certified Security Specialist\n$249 exam"},
+  {id:"S_SA",label:"S-SA",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.seco-institute.org/get-trained/cyber-defense-track/",tip:"SECO Associate SOC Analyst\n$480 exam"},
+  {id:"CREST_CPIA",label:"CREST CPIA",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-practitioner-intrusion-analyst",tip:"CREST Practitioner Intrusion Analyst\n$425 exam"},
+  {id:"CREST_CPTIA",label:"CREST CPTIA",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-practitioner-threat-intelligence-analyst/",tip:"CREST Practitioner Threat Intelligence Analyst\n$425 exam"},
+  {id:"MESE",label:"MESE",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.mosse-institute.com/certifications/mese-certified-enterprise-security-engineer.html",tip:"Mosse Institute Enterprise Security Engineer\n$450"},
+  {id:"CSCU",label:"CSCU",domain:"ops",level:"beginner",subcat:"blue",url:"https://www.eccouncil.org/programs/certified-secure-computer-user",tip:"EC Council Certified Secure Computer User\n$125 exam"},
+  // ─── Security Operations — Red Team ───
+  {id:"OSEE",label:"OSEE",domain:"ops",level:"expert",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Exploitation Expert\n$5,000 lab + travel (verify at offsec.com)"},
+  {id:"OSCE3",label:"OSCE3",domain:"ops",level:"expert",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Certified Expert 3\n$4,649 three labs"},
+  {id:"GXPN",label:"GXPN",domain:"ops",level:"expert",subcat:"red",url:"https://www.giac.org/certification/gxpn",tip:"GIAC Exploit Researcher and Advanced Penetration Tester\n$979 exam"},
+  {id:"GAWN",label:"GAWN",domain:"ops",level:"expert",subcat:"red",url:"https://www.giac.org/certification/gawn",tip:"GIAC Assessing Wireless Networks\n$979 exam"},
+  {id:"CREST_CSAM",label:"CREST CSAM",domain:"ops",level:"expert",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-simulated-attack-manager",tip:"CREST Certified Simulated Attack Manager\n$2,499 two exams"},
+  {id:"CREST_CCSAS",label:"CREST CCSAS",domain:"ops",level:"expert",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-simulated-attack-specialist",tip:"CREST Certified Simulated Attack Specialist\n$2,520 two exams & lab"},
+  {id:"HTB_CWEE",label:"HTB CWEE",domain:"ops",level:"expert",subcat:"red",url:"https://academy.hackthebox.com/preview/certifications/htb-certified-web-exploitation-expert",tip:"Hack the Box Certified Web Exploitation Expert\n$1,260"},
+  {id:"eWPTX",label:"eWPTX",domain:"ops",level:"expert",subcat:"red",url:"https://security.ine.com/certifications/",tip:"INE Web Application Penetration Tester eXtreme\n$400 exam",dead:true},
+  {id:"OSED",label:"OSED",domain:"ops",level:"expert",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Exploit Developer\n$1,499 lab"},
+  {id:"OSEP",label:"OSEP",domain:"ops",level:"expert",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Experienced Penetration Tester\n$1,499 lab"},
+  {id:"OSWE",label:"OSWE",domain:"ops",level:"expert",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Web Expert\n$1,649 lab"},
+  {id:"OSMR",label:"OSMR",domain:"ops",level:"advanced",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security macOS Researcher\n$2,499"},
+  {id:"GX_PT",label:"GX-PT",domain:"ops",level:"advanced",subcat:"red",url:"https://www.giac.org/certifications/experienced-penetration-tester-gxpt/",tip:"GIAC Experienced Penetration Tester\n$1,299 exam"},
+  {id:"OSCP",label:"OSCP",domain:"ops",level:"advanced",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Certified Professional\n$1,499 labs",key:true},
+  {id:"OSWP",label:"OSWP",domain:"ops",level:"advanced",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Wireless Professional\n$450 labs"},
+  {id:"GPEN",label:"GPEN",domain:"ops",level:"advanced",subcat:"red",url:"https://www.giac.org/certification/gpen",tip:"GIAC Certified Penetration Tester\n$979 exam",key:true},
+  {id:"GWAPT",label:"GWAPT",domain:"ops",level:"advanced",subcat:"red",url:"https://www.giac.org/certification/gwapt",tip:"GIAC Web Application Penetration Tester\n$979 exam"},
+  {id:"CRTO_II",label:"CRTO II",domain:"ops",level:"advanced",subcat:"red",url:"https://training.zeropointsecurity.co.uk/courses/red-team-ops-ii",tip:"Zero Point Security Red Team Operator II\n$121 lab"},
+  {id:"PACES",label:"PACES",domain:"ops",level:"advanced",subcat:"red",url:"https://www.pentesteracademy.com/gcb",tip:"Pentester Academy Certified Enterprise Security Specialist\n$339–749 lab"},
+  {id:"CREST_CRT",label:"CREST CRT",domain:"ops",level:"advanced",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-registered-penetration-tester",tip:"CREST Certified Penetration Tester\n$612 exam"},
+  {id:"CREST_CCTAPP",label:"CREST CCTAPP",domain:"ops",level:"advanced",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-web-application-tester/",tip:"CREST Certified Web Application Tester\n$2,520 exam & lab"},
+  {id:"CREST_CCTINF",label:"CREST CCTINF",domain:"ops",level:"advanced",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-certified-infrastructure-tester",tip:"CREST Certified Infrastructure Tester\n$2,520 exam & lab"},
+  {id:"MRT",label:"MRT",domain:"ops",level:"advanced",subcat:"red",url:"https://www.mosse-institute.com/certifications/mrt-certified-red-teamer.html",tip:"Mosse Institute Certified Red Teamer\n$450"},
+  {id:"GRTP",label:"GRTP",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.giac.org/certifications/red-team-professional-grtp/",tip:"GIAC Red Team Professional\n$979 exam"},
+  {id:"GCPN",label:"GCPN",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.giac.org/certification/gcpn",tip:"GIAC Cloud Penetration Tester\n$2,499 exam"},
+  {id:"LPT",label:"LPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.eccouncil.org/programs/licensed-penetration-tester-lpt-master/",tip:"EC Council Licensed Penetration Tester\n$899 exam"},
+  {id:"PNPT",label:"PNPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://certifications.tcm-sec.com/pnpt/",tip:"TCM Security Practical Network Penetration Tester\n$299 exam",key:true},
+  {id:"CPENT",label:"CPENT",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.eccouncil.org/programs/certified-penetration-testing-professional-cpent/",tip:"EC Council Certified Penetration Testing Professional\n$999 exam"},
+  {id:"CEH",label:"CEH",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/",tip:"EC Council Certified Ethical Hacker\n$1,199 exam"},
+  {id:"HTB_CPTS",label:"HTB CPTS",domain:"ops",level:"intermediate",subcat:"red",url:"https://academy.hackthebox.com/preview/certifications/htb-certified-penetration-testing-specialist/",tip:"Hack the Box Certified Penetration Testing Specialist\n$145 modules + $210 exam",key:true},
+  {id:"HTB_CBBH",label:"HTB CBBH",domain:"ops",level:"intermediate",subcat:"red",url:"https://academy.hackthebox.com/preview/certifications/htb-certified-bug-bounty-hunter/",tip:"Hack the Box Certified Bug Bounty Hunter\n$145 modules + $210 exam"},
+  {id:"BSCP",label:"BSCP",domain:"ops",level:"intermediate",subcat:"red",url:"https://portswigger.net/web-security/certification",tip:"Burp Suite Certified Practitioner\n$99 exam",key:true},
+  {id:"eCPPT",label:"eCPPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://security.ine.com/certifications/",tip:"INE Certified Professional Penetration Tester\n$400 lab"},
+  {id:"eWPT",label:"eWPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://security.ine.com/certifications/",tip:"INE Web Application Penetration Tester\n$400 lab"},
+  {id:"CRTO",label:"CRTO",domain:"ops",level:"intermediate",subcat:"red",url:"https://courses.zeropointsecurity.co.uk/courses/red-team-ops",tip:"Zero Point Security Certified Red Team Operator\n$121 lab",key:true},
+  {id:"MPT",label:"MPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.mosse-institute.com/certifications/mpt-certified-penetration-tester.html",tip:"Mosse Institute Certified Penetration Tester\n$450"},
+  {id:"CSTL",label:"CSTL",domain:"ops",level:"intermediate",subcat:"red",url:"https://thecyberscheme.org/cyber-scheme-team-leader-cstl-exam/",tip:"Cyber Scheme Team Leader\n$1,945 exam"},
+  {id:"CSTM",label:"CSTM",domain:"ops",level:"intermediate",subcat:"red",url:"https://thecyberscheme.org/cyber-scheme-team-member-cstm-exam/",tip:"Cyber Scheme Team Member\n$610 exam"},
+  {id:"OSWA",label:"OSWA",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.offsec.com/courses-and-certifications/",tip:"Offensive Security Web Assessor\n$2,499"},
+  {id:"GMOB",label:"GMOB",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.giac.org/certification/mobile-device-security-analyst-gmob",tip:"GIAC Mobile Device Security Analyst\n$399 exam"},
+  {id:"PJMR",label:"PJMR",domain:"ops",level:"intermediate",subcat:"red",url:"https://certifications.tcm-sec.com/pjmr/",tip:"Practical Junior Malware Researcher\n$399 lab"},
+  {id:"MCPT",label:"MCPT",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.mosse-institute.com/certifications/mcpt-cloud-penetration-tester.html",tip:"Mosse Institute Cloud Penetration Tester\n$450"},
+  {id:"SOG_CAPen",label:"SOG CAPen",domain:"ops",level:"intermediate",subcat:"red",url:"https://secops.group/product/certified-appsec-pentester/",tip:"SecOps Group Certified AppSec Pentester\n$500 exam"},
+  {id:"SOG_CAPenX",label:"SOG CAPenX",domain:"ops",level:"advanced",subcat:"red",url:"https://secops.group/product/certified-appsec-pentesting-expert-capenx/",tip:"SecOps Group Certified AppSec Pentesting eXpert\n$800 exam"},
+  {id:"SOG_CNPen",label:"SOG CNPen",domain:"ops",level:"intermediate",subcat:"red",url:"https://secops.group/product/certified-network-pentester/",tip:"SecOps Group Certified Network Pentester\n$500 exam"},
+  {id:"CCPenX_AWS",label:"CCPenX-AWS",domain:"ops",level:"advanced",subcat:"red",url:"https://secops.group/product/certified-cloud-pentesting-expert/",tip:"SecOps Group Certified Cloud Pentesting eXpert - AWS\n$800 exam"},
+  {id:"CREST_CPSA",label:"CREST CPSA",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.crest-approved.org/certification-careers/crest-certifications/crest-practitioner-security-analyst",tip:"CREST Practitioner Security Analyst\n$425 exam"},
+  {id:"eJPT",label:"eJPT",domain:"ops",level:"beginner",subcat:"red",url:"https://ine.com/learning/certifications/",tip:"INE Junior Penetration Tester\n$249 lab",key:true},
+  {id:"GCPEH",label:"GCPEH",domain:"ops",level:"beginner",subcat:"red",url:"https://gaqm.org/certifications/information_systems_security/cpeh",tip:"GAQM Certified Professional Ethical Hacker\n$170 exam",key:true},
+  {id:"Pentest_plus",label:"Pentest+",domain:"ops",level:"beginner",subcat:"red",url:"https://www.comptia.org/certifications/pentest",tip:"CompTIA Pentest+\n$404 exam"},
+  {id:"KLCP",label:"KLCP",domain:"ops",level:"beginner",subcat:"red",url:"https://kali.training/klcp/",tip:"Kali Linux Certified Professional\n$299 exam"},
+  {id:"MVRE",label:"MVRE",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.mosse-institute.com/certifications/mvre-vulnerability-researcher-and-exploitation-specialist.html",tip:"Mosse Institute Vulnerability Researcher & Exploitation Specialist\n$450"},
+  {id:"MRE",label:"MRE",domain:"ops",level:"intermediate",subcat:"red",url:"https://www.mosse-institute.com/certifications/mre-certified-reverse-engineer.html",tip:"Mosse Institute Certified Reverse Engineer\n$450"},
+  {id:"EEHF",label:"EEHF",domain:"ops",level:"beginner",subcat:"red",url:"https://www.exin.com/certifications/exin-ethical-hacking-foundation-exam",tip:"EXIN Ethical Hacking Foundation\n$232 exam"},
+  {id:"S_EHF",label:"S-EHF",domain:"ops",level:"beginner",subcat:"red",url:"https://www.seco-institute.org/certifications/ethical-hacking-certification-track/",tip:"SECO Ethical Hacking Foundation\n$460 exam"},
+  {id:"C_VA",label:"C)VA",domain:"ops",level:"beginner",subcat:"red",url:"https://mile2.com/vulnerability-assessor-outline/",tip:"Mile2 Certified Vulnerability Assessor\n$550 exam"},
+];
+
+const DM={
+  network: {label:"Network Security",  short:"NET",  c:"#70AD47",dk:"#1e3010",gl:"rgba(112,173,71,.3)"},
+  iam:     {label:"Identity & Access",  short:"IAM",  c:"#1aafaf",dk:"#0a3535",gl:"rgba(26,175,175,.3)"},
+  engineer:{label:"Architecture",       short:"ARCH", c:"#fa8e36",dk:"#4a2508",gl:"rgba(250,142,54,.3)"},
+  asset:   {label:"Asset Security",     short:"ASSET",c:"#e4ac03",dk:"#4a3800",gl:"rgba(228,172,3,.3)"},
+  mgmt:    {label:"Security & GRC",     short:"GRC",  c:"#9aa8c0",dk:"#2a3048",gl:"rgba(154,168,192,.2)"},
+  test:    {label:"Audit & Testing",    short:"AUDIT",c:"#b06aff",dk:"#2a0a50",gl:"rgba(176,106,255,.3)"},
+  software:{label:"Software Security",  short:"SDEV", c:"#4a9fd5",dk:"#0e2840",gl:"rgba(74,159,213,.3)"},
+  ops:     {label:"Security Operations",short:"OPS",  c:"#c05050",dk:"#3c0e0e",gl:"rgba(192,80,80,.3)"}
+};
+const DOMS=Object.keys(DM);
+const LVC=["#70AD47","#fa8e36","#3a7bd5","#d05050"];
+const LVK=["beginner","intermediate","advanced","expert"];
+function cc(c){if(c.domain==="ops")return c.subcat==="red"?"#d05050":"#3a7bd5";return DM[c.domain]?.c||"#888"}
+function lvi(l){return LVK.indexOf(l)}
+
+let aD="all",aL="all",aSC="all",sq="",foc=false;
+const cmpSet=new Map();
+let trayOpen=false;
+let W=0,H=0;
+function dims(){const r=document.getElementById("cw").getBoundingClientRect();W=r.width;H=r.height}
+
+function vis(c){
+  if(aD!=="all"&&c.domain!==aD)return false;
+  if(aL!=="all"&&c.level!==aL)return false;
+  if(aSC!=="all"&&c.domain==="ops"&&c.subcat!==aSC)return false;
+  if(foc&&!c.key)return false;
+  if(sq){const q=sq.toLowerCase();return c.label.toLowerCase().includes(q)||(c.tip||"").toLowerCase().includes(q)}
+  return true;
+}
+
+// D3 zoom setup
+const svg=d3.select("#svg");
+const zg=d3.select("#zg");
+const ll=d3.select("#ll");
+const hl=d3.select("#hl");
+const nl=d3.select("#nl");
+
+const zoom=d3.zoom().scaleExtent([0.18,3.5])
+  .on("zoom",e=>zg.attr("transform",e.transform));
+svg.call(zoom);
+
+function buildMap(){
+  dims();
+  ll.selectAll("*").remove();
+  hl.selectAll("*").remove();
+  nl.selectAll("*").remove();
+  const cx=W/2,cy=H/2;
+  const DR=Math.min(W,H)*0.26;
+  const ND=DOMS.length;
+
+  // BG dot pattern
+  nl.append("circle").attr("cx",cx).attr("cy",cy).attr("r",Math.max(W,H)*0.7)
+    .attr("fill","none").attr("stroke","#1a1e2a").attr("stroke-width",0.5).attr("stroke-dasharray","1,40").attr("opacity",0.3);
+
+  // Center node
+  const cg=nl.append("g").attr("transform",`translate(${cx},${cy})`);
+  cg.append("circle").attr("r",50).attr("fill","url(#cgrad)").attr("stroke","#2a3050").attr("stroke-width",1.5);
+  cg.append("circle").attr("r",38).attr("fill","none").attr("stroke","#3a4570").attr("stroke-width",0.5).attr("stroke-dasharray","3,4");
+  cg.append("text").attr("text-anchor","middle").attr("dy",-6).attr("fill","#c8d4f0")
+    .attr("font-size","11").attr("font-family","Space Mono,monospace").attr("font-weight","700")
+    .attr("letter-spacing","0.1em").text("SECURITY");
+  cg.append("text").attr("text-anchor","middle").attr("dy",8).attr("fill","#4f8ef7")
+    .attr("font-size","9").attr("font-family","Space Mono,monospace").attr("letter-spacing","0.14em").text("CERTIFICATIONS");
+
+  DOMS.forEach((dom,i)=>{
+    const meta=DM[dom];
+    const angle=(i/ND)*Math.PI*2-Math.PI/2;
+    const dx=cx+DR*Math.cos(angle);
+    const dy=cy+DR*Math.sin(angle);
+    const vCerts=CERTS.filter(c=>c.domain===dom&&vis(c));
+    const allCerts=CERTS.filter(c=>c.domain===dom);
+    const active=vCerts.length>0;
+    const baseAlpha=active?1:0.12;
+
+    // Ring from center to domain
+    ll.append("line").attr("x1",cx).attr("y1",cy).attr("x2",dx).attr("y2",dy)
+      .attr("stroke",meta.c).attr("stroke-width",1.2).attr("stroke-opacity",active?0.35:0.06)
+      .attr("stroke-dasharray","3,4");
+
+    // Domain halo
+    hl.append("circle").attr("cx",dx).attr("cy",dy).attr("r",56)
+      .attr("fill",meta.c).attr("opacity",active?0.06:0.01);
+
+    // Domain label pill
+    const dg=nl.append("g").attr("transform",`translate(${dx},${dy})`);
+    dg.append("rect").attr("x",-29).attr("y",-12).attr("width",58).attr("height",24)
+      .attr("rx",12).attr("fill",meta.dk||"#1a1a1a")
+      .attr("stroke",meta.c).attr("stroke-width",1.5).attr("opacity",baseAlpha);
+    dg.append("text").attr("text-anchor","middle").attr("dy",4)
+      .attr("fill",meta.c).attr("font-size","9").attr("font-family","Space Mono,monospace")
+      .attr("font-weight","700").attr("letter-spacing","0.1em").attr("opacity",baseAlpha)
+      .text(meta.short);
+
+    if(!active)return;
+
+    // Cert nodes grouped by level in concentric arcs
+    const RINGS=[72,105,140,178];
+    const groups=[0,1,2,3].map(l=>vCerts.filter(c=>lvi(c.level)===l));
+
+    groups.forEach((grp,li)=>{
+      if(!grp.length)return;
+      const rr=RINGS[li];
+      const maxSpread=Math.PI*0.75;
+      const spread=Math.min(maxSpread,(grp.length-1)*0.19);
+      grp.forEach((cert,ci)=>{
+        const step=grp.length<=1?0:(spread*2)/(grp.length-1);
+        const ca=angle-spread+ci*step;
+        const nx=dx+rr*Math.cos(ca);
+        const ny=dy+rr*Math.sin(ca);
+
+        // link
+        ll.append("line").attr("x1",dx).attr("y1",dy).attr("x2",nx).attr("y2",ny)
+          .attr("stroke",cc(cert)).attr("stroke-width",0.6).attr("stroke-opacity",0.28);
+
+        // cert node
+        const lbl=cert.label;
+        const cw=Math.max(36,lbl.length*6.2+10);
+        const ch=19;
+        const color=cc(cert);
+        const sel=cmpSet.has(cert.id);
+
+        const ng=nl.append("g")
+          .attr("class","nc"+(sel?" sel":""))
+          .attr("transform",`translate(${nx},${ny})`)
+          .attr("data-id",cert.id);
+
+        ng.append("rect")
+          .attr("x",-cw/2).attr("y",-ch/2).attr("width",cw).attr("height",ch).attr("rx",3)
+          .attr("fill",sel?color+"22":"rgba(8,10,16,0.9)")
+          .attr("stroke",color).attr("stroke-width",sel?2:0.9)
+          .attr("stroke-opacity",cert.dead?0.4:1);
+
+        ng.append("text").attr("text-anchor","middle").attr("dy",4)
+          .attr("fill",sel?"#fff":color)
+          .attr("font-size","9").attr("font-family","Space Mono,monospace")
+          .attr("font-weight","700").attr("letter-spacing","0.03em").text(lbl);
+
+        // Level pip
+        ng.append("circle").attr("cx",cw/2-2.5).attr("cy",ch/2-2.5).attr("r",2.5)
+          .attr("fill",LVC[lvi(cert.level)]).attr("opacity",0.9);
+
+        // Key cert star
+        if(cert.key){
+          ng.append("circle").attr("cx",-cw/2+3).attr("cy",-ch/2+3).attr("r",2.5)
+            .attr("fill",color).attr("opacity",0.7);
+        }
+
+        if(cert.dead){
+          ng.append("text").attr("x",cw/2-1).attr("y",-ch/2+2)
+            .attr("text-anchor","end").attr("fill","#f9a825").attr("font-size","7").text("⚠");
+        }
+
+        ng.on("click",(e)=>{e.stopPropagation();togCmp(cert);})
+          .on("mouseenter",(e)=>showTT(e,cert))
+          .on("mouseleave",hideTT);
+      });
+    });
+  });
+
+  // Update count
+  document.getElementById("cnt").textContent=CERTS.filter(vis).length+" certs";
+}
+
+// Initial zoom to fit
+function fitMap(){
+  dims();
+  svg.call(zoom.transform,d3.zoomIdentity.translate(0,0).scale(1));
+}
+
+// TOOLTIP
+const tt=document.getElementById("tt");
+function showTT(e,cert){
+  const meta=DM[cert.domain]||{};const color=cc(cert);
+  const lvColors=["#70AD47","#fa8e36","#3a7bd5","#d05050"];
+  const li=lvi(cert.level);
+  const sel=cmpSet.has(cert.id);
+  tt.innerHTML=`<div class="ttn">${cert.label}</div>
+<div class="ttd" style="color:${color}">${meta.label||cert.domain}${cert.subcat?" · "+cert.subcat.toUpperCase():""}</div>
+<div class="ttb">${(cert.tip||"").replace(cert.label,"").trim()}</div>
+<span class="ttlv" style="background:${lvColors[li]||"#555"};color:${li<=1?"#111":"#fff"}">${cert.level}</span>
+${cert.dead?'<div class="ttdead">⚠ URL may be outdated</div>':""}
+<div class="tthint">${sel?"✓ In tray — click to remove":"Click to add to compare tray"}</div>`;
+  tt.classList.add("show");mvTT(e);
+}
+function mvTT(e){
+  let x=e.clientX+12,y=e.clientY-8;
+  if(x+254>window.innerWidth)x=e.clientX-254;
+  if(y+200>window.innerHeight)y=e.clientY-200;
+  tt.style.left=x+"px";tt.style.top=y+"px";
+}
+function hideTT(){tt.classList.remove("show")}
+document.addEventListener("mousemove",e=>{if(tt.classList.contains("show"))mvTT(e)});
+
+// COMPARE
+function togCmp(cert){
+  if(cmpSet.has(cert.id))cmpSet.delete(cert.id);
+  else{if(cmpSet.size>=8)return;cmpSet.set(cert.id,cert);}
+  updTray();buildMap();
+}
+function updTray(){
+  const n=cmpSet.size;
+  document.getElementById("cmpn").textContent=n;
+  document.getElementById("cmpbtn").classList.toggle("show",n>0);
+  document.getElementById("planBtn").disabled=n<1;
+  const cards=document.getElementById("ctcds");
+  const empty=document.getElementById("ctempty");
+  Array.from(cards.children).forEach(c=>{if(!c.id)c.remove();});
+  empty.style.display=n===0?"block":"none";
+  cmpSet.forEach(cert=>{
+    const color=cc(cert);const meta=DM[cert.domain]||{};
+    const d=document.createElement("div");d.className="ctcd";d.style.borderColor=color;
+    d.innerHTML=`<div class="ctcd-l" style="color:${color}">${cert.label}</div>
+<div class="ctcd-s">${meta.label||cert.domain}<br>${cert.level}${cert.subcat?" · "+cert.subcat.toUpperCase()+" team":""}<br>${cert.tip?.split("\n")[1]||""}</div>
+<button class="ctcd-x" onclick="remCmp('${cert.id}')">×</button>`;
+    cards.insertBefore(d,empty);
+  });
+}
+function remCmp(id){cmpSet.delete(id);updTray();buildMap();}
+function clearTray(){cmpSet.clear();updTray();buildMap();if(trayOpen)toggleTray();}
+function toggleTray(){trayOpen=!trayOpen;document.getElementById("ctray").classList.toggle("open",trayOpen);}
+
+// FILTERS
+document.querySelectorAll(".fb[data-d]").forEach(b=>b.addEventListener("click",()=>{
+  aD=b.dataset.d;
+  document.querySelectorAll(".fb[data-d]").forEach(x=>x.classList.toggle("on",x===b));
+  buildMap();chkClr();
+}));
+document.querySelectorAll(".fb[data-l]").forEach(b=>b.addEventListener("click",()=>{
+  aL=b.dataset.l;
+  document.querySelectorAll(".fb[data-l]").forEach(x=>x.classList.toggle("on",x===b));
+  buildMap();chkClr();
+}));
+document.querySelectorAll(".fb[data-sc]").forEach(b=>b.addEventListener("click",()=>{
+  aSC=b.dataset.sc;
+  document.querySelectorAll(".fb[data-sc]").forEach(x=>x.classList.toggle("on",x===b));
+  buildMap();chkClr();
+}));
+document.getElementById("si").addEventListener("input",e=>{sq=e.target.value;buildMap();chkClr();});
+function chkClr(){document.getElementById("clr").classList.toggle("show",aD!=="all"||aL!=="all"||aSC!=="all"||sq||foc);}
+document.getElementById("clr").addEventListener("click",resetAll);
+function resetAll(){
+  aD="all";aL="all";aSC="all";sq="";foc=false;
+  document.getElementById("si").value="";
+  document.querySelectorAll(".fb[data-d]").forEach(b=>b.classList.toggle("on",b.dataset.d==="all"));
+  document.querySelectorAll(".fb[data-l]").forEach(b=>b.classList.toggle("on",b.dataset.l==="all"));
+  document.querySelectorAll(".fb[data-sc]").forEach(b=>b.classList.toggle("on",b.dataset.sc==="all"));
+  const fb=document.getElementById("focBtn");
+  fb.classList.remove("on");
+  buildMap();chkClr();
+}
+function toggleFocus(){
+  foc=!foc;
+  document.getElementById("focBtn").classList.toggle("on",foc);
+  buildMap();chkClr();
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="/"&&e.target.tagName!=="INPUT"&&e.target.tagName!=="TEXTAREA"){
+    e.preventDefault();document.getElementById("si").focus();
+  }
+  if(e.key==="Escape"){
+    if(sq){document.getElementById("si").value="";sq="";buildMap();chkClr();}
+    else document.getElementById("si").blur();
+  }
+});
+
+// ── KEY MANAGEMENT ──
+// Key lives in sessionStorage only — never in the file, never in the repo.
+// sessionStorage is tab-scoped and clears automatically when the tab closes.
+const KEY_SESSION = "scr_anthropic_key";
+
+function getKey(){ return sessionStorage.getItem(KEY_SESSION)||""; }
+
+function saveKey(){
+  const val=document.getElementById("fKey").value.trim();
+  if(!val){ setKeyStatus("Enter a key first","var(--co)"); return; }
+  if(!val.startsWith("sk-ant-")){ setKeyStatus("Key should start with sk-ant-","var(--co)"); return; }
+  sessionStorage.setItem(KEY_SESSION,val);
+  document.getElementById("fKey").value="••••••••••••••••"+val.slice(-4);
+  document.getElementById("keyClearBtn").style.display="";
+  document.getElementById("keySaveBtn").textContent="Saved";
+  setTimeout(()=>document.getElementById("keySaveBtn").textContent="Save",1800);
+  setKeyStatus("✓ Key saved for this session only — clears on tab close","#70AD47");
+}
+
+function clearKey(){
+  sessionStorage.removeItem(KEY_SESSION);
+  document.getElementById("fKey").value="";
+  document.getElementById("keyClearBtn").style.display="none";
+  document.getElementById("keySaveBtn").textContent="Save";
+  setKeyStatus("Key cleared","var(--tx3)");
+}
+
+function setKeyStatus(msg,color){
+  const el=document.getElementById("keyStatus");
+  el.textContent=msg; el.style.color=color||"var(--tx3)";
+}
+
+function toggleKeyVis(){
+  const inp=document.getElementById("fKey");
+  const btn=document.getElementById("keyToggle");
+  if(inp.type==="password"){inp.type="text";btn.textContent="HIDE";}
+  else{inp.type="password";btn.textContent="SHOW";}
+}
+
+function syncKeyUI(){
+  const stored=getKey();
+  if(stored){
+    document.getElementById("fKey").value="••••••••••••••••"+stored.slice(-4);
+    document.getElementById("keyClearBtn").style.display="";
+    setKeyStatus("✓ Key loaded from session — clears when tab closes","#70AD47");
+  }
+}
+
+// MODAL / PLANNER
+function openModal(){
+  if(cmpSet.size===0)return;
+  const chips=document.getElementById("gchips");chips.innerHTML="";
+  cmpSet.forEach(cert=>{
+    const color=cc(cert);
+    const ch=document.createElement("div");ch.className="gchip";
+    ch.style.borderColor=color;ch.style.color=color;ch.textContent=cert.label;
+    chips.appendChild(ch);
+  });
+  document.getElementById("pout").className="pout";
+  document.getElementById("pout").innerHTML="";
+  document.getElementById("genBtn").disabled=false;
+  document.getElementById("genBtn").textContent="Generate Roadmap ↗";
+  syncKeyUI();
+  document.getElementById("mov").classList.add("open");
+}
+function closeModal(){document.getElementById("mov").classList.remove("open");}
+
+async function genPath(){
+  // Resolve key: use saved session key, fall back to whatever is in the input field
+  let apiKey=getKey();
+  const inputVal=document.getElementById("fKey").value.trim();
+  if(!apiKey && inputVal && !inputVal.startsWith("•")){
+    apiKey=inputVal; // unsaved raw value typed directly
+  }
+  if(!apiKey){
+    setKeyStatus("⚠ Paste your Anthropic API key above and click Save first","var(--co)");
+    document.getElementById("fKey").focus();
+    return;
+  }
+
+  const goals=Array.from(cmpSet.values());
+  const cur=document.getElementById("fCur").value.trim();
+  const role=document.getElementById("fRole").value.trim();
+  const time=document.getElementById("fTime").value.trim();
+  const pout=document.getElementById("pout");
+  const genBtn=document.getElementById("genBtn");
+  genBtn.disabled=true;genBtn.textContent="Generating…";
+  pout.className="pout show";
+  pout.innerHTML='<div class="lmsg"><div class="spinner"></div>Analyzing cert dependencies and building your roadmap…</div>';
+
+  const goalTxt=goals.map(c=>`- ${c.label} (${DM[c.domain]?.label||c.domain}, ${c.level}${c.subcat?", "+c.subcat+" team":""}, ${c.tip?.split("\n")[1]||""})`).join("\n");
+  const prompt=`You are a senior cybersecurity career advisor and GRC/CTI analyst. Build a structured certification roadmap.
+
+TARGET CERTIFICATIONS:
+${goalTxt}
+
+BACKGROUND: ${cur||"Not specified"}
+ROLE GOAL: ${role||"Not specified"}
+TIME: ${time||"Not specified"}
+
+Provide a tight, tactical roadmap with these sections:
+1. ALIGNMENT CHECK — Are these certs right for the stated role? Any strategic gaps?
+2. PREREQUISITES — What to know/have first and why
+3. ORDERED PATH — Numbered steps: cert name, est. study time, cost, why this order
+4. QUICK WINS — Entry-level cert(s) to build momentum right now if relevant
+5. WATCH OUTS — Expensive labs, time-limited access, logistical issues (e.g. CCIE travel costs, OffSec lab windows)
+
+Be direct and precise. Tailor to the stated background. No generic filler.`;
+
+  try{
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key":apiKey,
+        "anthropic-version":"2023-06-01"
+      },
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+        messages:[{role:"user",content:prompt}]})
+    });
+    const data=await resp.json();
+    if(data.error){
+      // Handle auth errors specifically with helpful guidance
+      if(data.error.type==="authentication_error"){
+        clearKey();
+        throw new Error("Invalid API key. Key has been cleared — please re-enter a valid key from console.anthropic.com");
+      }
+      throw new Error(data.error.message||"API error");
+    }
+    const text=data.content?.map(b=>b.text||"").join("")||"";
+    if(!text)throw new Error("Empty response from API");
+
+    const formatted=text
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+      .replace(/^(\d+\. .*)/gm,"<strong style=\"color:#4f8ef7\">$1</strong>")
+      .replace(/^([A-Z][A-Z ]{2,}[A-Z]( CHECK| PATH| WINS| OUTS)?:?$)/gm,
+        "<span style=\"color:#4f8ef7;font-size:9px;letter-spacing:.1em\">$1</span>");
+    pout.innerHTML=`<div class="roadmap-out">${formatted}</div>`;
+  }catch(err){
+    pout.innerHTML=`<div class="err">⚠ ${err.message}</div>`;
+  }finally{
+    genBtn.disabled=false;genBtn.textContent="Regenerate ↗";
+  }
+}
+
+// RESIZE
+const ro=new ResizeObserver(()=>buildMap());
+ro.observe(document.getElementById("cw"));
+buildMap();
+fitMap();
+</script>
+</body>
+</html>
