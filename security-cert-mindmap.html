@@ -26,13 +26,92 @@
 <title>Security Cert Roadmap — Mind Map</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+/* ── BASE TOKENS (Dark default) ── */
 :root{
   --bg:#0c0e15;--surface:#131620;--sf2:#1a1d2a;--br:#22263a;--br2:#2a2f45;
-  --tx:#dce2f0;--tx2:#7a869e;--tx3:#3f4a5e;--ac:#4f8ef7;
+  --tx:#dce2f0;--tx2:#7a869e;--tx3:#3f4a5e;
+  --ac:#4f8ef7;--ac2:#4f8ef7;
   --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
   --cn:#70AD47;--ci:#1aafaf;--ce:#fa8e36;--ca:#e4ac03;
   --cm:#9aa8c0;--ct:#b06aff;--cs:#4a9fd5;--co:#c05050;
   --lv0:#70AD47;--lv1:#fa8e36;--lv2:#3a7bd5;--lv3:#d05050;
+  --node-bg:rgba(8,10,16,0.9);
+  --glow-ac:rgba(79,142,247,0);
+  --canvas-g1:#171c30;--canvas-g2:#0c0e15;
+  --md-h:var(--ac);--md-bq-bg:rgba(79,142,247,.07);--md-bq-br:var(--ac);
+  --md-code-bg:#1a1d2a;--md-table-hd:#1a1d2a;--md-table-bd:#22263a;
+  --out-font:var(--sans);--out-size:13px;--out-lh:1.75;
+}
+/* ── LIGHT ── */
+[data-theme=light]{
+  --bg:#f0f2f7;--surface:#ffffff;--sf2:#f0f2f7;--br:#dde2ee;--br2:#c8d0e0;
+  --tx:#334155;--tx2:#4b5563;--tx3:#9ca3af;
+  --ac:#2563eb;--ac2:#2563eb;
+  --cn:#16a34a;--ci:#0d9488;--ce:#ea6c0a;--ca:#ca8a04;
+  --cm:#374151;--ct:#7c3aed;--cs:#1d6fa3;--co:#c0514d;
+  --lv0:#16a34a;--lv1:#ea6c0a;--lv2:#2563eb;--lv3:#dc2626;
+  --node-bg:rgba(240,242,247,0.92);
+  --glow-ac:rgba(37,99,235,0);
+  --canvas-g1:#d8deee;--canvas-g2:#e8ecf5;
+  --md-h:var(--ac);--md-bq-bg:rgba(37,99,235,.06);--md-bq-br:var(--ac);
+  --md-code-bg:#e8ecf5;--md-table-hd:#e8ecf5;--md-table-bd:#dde2ee;
+}
+/* ── DEFCON ── */
+[data-theme=defcon]{
+  --bg:#000;--surface:#0a0a0a;--sf2:#111;--br:#1f1f1f;--br2:#333;
+  --tx:#ff9900;--tx2:#cc6600;--tx3:#664400;
+  --ac:#ff6600;--ac2:#ff9900;
+  --cn:#ff6600;--ci:#ff9900;--ce:#ff4400;--ca:#cc8800;
+  --cm:#cc8800;--ct:#ff3300;--cs:#ff8800;--co:#ff3300;
+  --lv0:#ff6600;--lv1:#ff9900;--lv2:#ffcc00;--lv3:#ff3300;
+  --node-bg:rgba(0,0,0,0.88);
+  --glow-ac:rgba(255,102,0,0);
+  --canvas-g1:#0d0800;--canvas-g2:#000;
+  --md-h:var(--ac);--md-bq-bg:rgba(255,102,0,.1);--md-bq-br:var(--ac);
+  --md-code-bg:#0f0800;--md-table-hd:#0f0800;--md-table-bd:#1f1f1f;
+}
+/* ── DRACULA ── */
+[data-theme=dracula]{
+  --bg:#282a36;--surface:#343746;--sf2:#3d4059;--br:#44475a;--br2:#6272a4;
+  --tx:#f8f8f2;--tx2:#cdd6f4;--tx3:#6272a4;
+  --ac:#bd93f9;--ac2:#ff79c6;
+  --cn:#50fa7b;--ci:#8be9fd;--ce:#ffb86c;--ca:#f1fa8c;
+  --cm:#cdd6f4;--ct:#bd93f9;--cs:#8be9fd;--co:#ff5555;
+  --lv0:#50fa7b;--lv1:#ffb86c;--lv2:#8be9fd;--lv3:#ff5555;
+  --node-bg:rgba(40,42,54,0.92);
+  --glow-ac:rgba(189,147,249,0);
+  --canvas-g1:#2d2f3f;--canvas-g2:#21222c;
+  --md-h:var(--ac);--md-bq-bg:rgba(189,147,249,.1);--md-bq-br:var(--ac);
+  --md-code-bg:#21222c;--md-table-hd:#21222c;--md-table-bd:#44475a;
+}
+/* ── HIGH CONTRAST ── */
+[data-theme=hc]{
+  --bg:#000;--surface:#000;--sf2:#0a0a0a;--br:#fff;--br2:#fff;
+  --tx:#fff;--tx2:#ccc;--tx3:#888;
+  --ac:#fff;--ac2:#ff0;
+  --cn:#0f0;--ci:#0ff;--ce:#ff8800;--ca:#ff0;
+  --cm:#fff;--ct:#f0f;--cs:#0ff;--co:#f00;
+  --lv0:#0f0;--lv1:#ff8800;--lv2:#0ff;--lv3:#f00;
+  --node-bg:rgba(0,0,0,0.95);
+  --glow-ac:rgba(255,255,255,0);
+  --canvas-g1:#050505;--canvas-g2:#000;
+  --md-h:var(--ac2);--md-bq-bg:rgba(255,255,0,.08);--md-bq-br:var(--ac2);
+  --md-code-bg:#111;--md-table-hd:#111;--md-table-bd:#fff;
+}
+/* ── CYBERPUNK ── */
+[data-theme=cyber]{
+  --bg:#0a0010;--surface:#120020;--sf2:#1a0030;--br:#3d0070;--br2:#6600cc;
+  --tx:#f0e6ff;--tx2:#cc88ff;--tx3:#6633aa;
+  --ac:#ff2d78;--ac2:#00ffe5;
+  --cn:#39ff14;--ci:#00ffe5;--ce:#ff9500;--ca:#ffe600;
+  --cm:#c8d4ff;--ct:#ff2d78;--cs:#00ffe5;--co:#ff2d78;
+  --lv0:#39ff14;--lv1:#ff9500;--lv2:#00ffe5;--lv3:#ff2d78;
+  --node-bg:rgba(10,0,16,0.88);
+  --glow-ac:rgba(255,45,120,0.35);
+  --canvas-g1:#150025;--canvas-g2:#0a0010;
+  --md-h:var(--ac);--md-bq-bg:rgba(255,45,120,.1);--md-bq-br:var(--ac);
+  --md-code-bg:#0d0020;--md-table-hd:#1a0030;--md-table-bd:#3d0070;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--tx)}
@@ -159,12 +238,55 @@ body{display:flex;flex-direction:column}
 .lmsg{text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--tx2)}
 .err{background:rgba(192,80,80,.1);border:1px solid rgba(192,80,80,.3);border-radius:4px;
   padding:9px 11px;color:#e08080;font-size:10px;font-family:var(--mono)}
-.roadmap-out{background:var(--sf2);border:1px solid var(--br2);border-radius:5px;
-  padding:14px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--tx2);
-  white-space:pre-wrap;word-break:break-word;overflow-x:auto;max-height:340px;overflow-y:auto}
-.roadmap-out h3{color:var(--ac);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;margin-top:12px}
-.roadmap-out h3:first-child{margin-top:0}
-.roadmap-out strong{color:var(--tx);font-weight:700}
+/* ── MARKDOWN OUTPUT ── */
+.roadmap-out{background:var(--sf2);border:1px solid var(--br2);border-radius:6px;
+  padding:20px 24px;font-family:var(--out-font);font-size:var(--out-size);
+  line-height:var(--out-lh);color:var(--tx2);overflow-x:hidden;overflow-y:auto;
+  word-break:break-word}
+.roadmap-out h1{font-size:20px;font-weight:500;color:var(--tx);margin:0 0 16px;
+  padding-bottom:10px;border-bottom:1px solid var(--br2);font-family:var(--sans)}
+.roadmap-out h2{font-size:15px;font-weight:500;color:var(--md-h);margin:20px 0 8px;
+  font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase}
+.roadmap-out h3{font-size:13px;font-weight:500;color:var(--tx);margin:16px 0 6px;
+  font-family:var(--sans)}
+.roadmap-out h4{font-size:12px;font-weight:500;color:var(--tx2);margin:12px 0 4px;
+  font-family:var(--mono);letter-spacing:.04em}
+.roadmap-out p{margin:0 0 10px;color:var(--tx2)}
+.roadmap-out ul,.roadmap-out ol{margin:0 0 12px 18px;color:var(--tx2)}
+.roadmap-out li{margin-bottom:5px}
+.roadmap-out strong{color:var(--tx);font-weight:600}
+.roadmap-out em{color:var(--tx2);font-style:italic}
+.roadmap-out a{color:var(--ac);text-decoration:underline}
+.roadmap-out hr{border:none;border-top:1px solid var(--br2);margin:16px 0}
+.roadmap-out blockquote{border-left:3px solid var(--md-bq-br);background:var(--md-bq-bg);
+  padding:10px 14px;margin:12px 0;border-radius:0 5px 5px 0;color:var(--tx2)}
+.roadmap-out code{background:var(--md-code-bg);padding:2px 6px;border-radius:3px;
+  font-family:var(--mono);font-size:11px;color:var(--ac2)}
+.roadmap-out pre{background:var(--md-code-bg);padding:12px 14px;border-radius:5px;
+  margin:10px 0;overflow-x:auto;border:1px solid var(--br2)}
+.roadmap-out pre code{background:none;padding:0;font-size:11px;color:var(--tx2)}
+.roadmap-out table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px}
+.roadmap-out th{background:var(--md-table-hd);color:var(--tx);font-family:var(--mono);
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 12px;border-bottom:2px solid var(--md-table-bd);text-align:left}
+.roadmap-out td{padding:7px 12px;border-bottom:1px solid var(--md-table-bd);color:var(--tx2)}
+.roadmap-out tr:hover td{background:rgba(128,128,128,.04)}
+/* Cyberpunk glow on headers */
+[data-theme=cyber] .roadmap-out h2{text-shadow:0 0 12px var(--ac),0 0 24px rgba(255,45,120,.4)}
+[data-theme=cyber] .roadmap-out code{box-shadow:0 0 8px rgba(0,255,229,.3)}
+/* DEFCON amber header */
+[data-theme=defcon] .roadmap-out h2{letter-spacing:.15em}
+/* Export toolbar */
+.export-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;
+  border-top:1px solid var(--br);background:var(--sf2);flex-shrink:0}
+.exp-lbl{font-size:9px;font-family:var(--mono);color:var(--tx3);text-transform:uppercase;letter-spacing:.1em}
+.exp-btn{padding:4px 11px;border-radius:4px;font-size:9px;font-family:var(--mono);font-weight:700;
+  cursor:pointer;border:1px solid var(--br2);background:transparent;color:var(--tx2);
+  display:flex;align-items:center;gap:4px;transition:all .1s;white-space:nowrap}
+.exp-btn:hover{border-color:var(--ac);color:var(--ac)}
+.exp-btn.pri{background:var(--ac);color:#fff;border-color:transparent}
+.exp-btn.pri:hover{filter:brightness(1.12)}
+[data-theme=cyber] .exp-btn.pri{box-shadow:0 0 14px var(--glow-ac)}
 /* ── TOOLTIP ── */
 .tt{position:fixed;z-index:400;background:rgba(8,10,16,.97);border:1px solid var(--br2);
   border-radius:6px;padding:9px 12px;max-width:240px;pointer-events:none;
@@ -209,6 +331,82 @@ input#costRange::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:
   border-radius:50%;background:var(--ac);cursor:pointer;border:none}
 input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
   background:var(--ac);cursor:pointer;border:none}
+/* ── SLIDE-OUT PANEL ── */
+.panel-overlay{position:fixed;inset:0;z-index:150;display:flex;pointer-events:none}
+.panel-overlay.open{pointer-events:all}
+.panel-backdrop{flex:1;background:rgba(0,0,0,.4);opacity:0;transition:opacity .25s}
+.panel-overlay.open .panel-backdrop{opacity:1}
+.panel{width:520px;max-width:92vw;background:var(--surface);border-left:1px solid var(--br2);
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s ease;
+  box-shadow:-8px 0 40px rgba(0,0,0,.5);flex-shrink:0}
+.panel-overlay.open .panel{transform:translateX(0)}
+[data-theme=cyber] .panel{border-left-color:var(--ac);box-shadow:-4px 0 30px rgba(255,45,120,.25)}
+.phd{padding:14px 18px 10px;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;gap:10px;flex-shrink:0}
+.phd-info{flex:1}
+.ptl{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--tx);letter-spacing:.06em}
+.psl{font-size:11px;color:var(--tx2);margin-top:2px}
+.phd-acts{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.pcl{background:none;border:none;color:var(--tx3);font-size:16px;cursor:pointer;padding:0 2px;line-height:1}
+.pcl:hover{color:var(--tx)}
+.pbd{flex:1;overflow-y:auto;padding:0}
+.pbd::-webkit-scrollbar{width:5px}
+.pbd::-webkit-scrollbar-track{background:var(--sf2)}
+.pbd::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+/* Panel config section */
+.pcfg{padding:14px 18px;border-bottom:1px solid var(--br)}
+/* Panel output section */
+.pout-wrap{padding:16px 20px 10px;flex:1}
+.pout-wrap .roadmap-out{max-height:none;border:none;padding:0;background:transparent}
+/* ── THEME SWITCHER ── */
+.theme-row{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.theme-lbl{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.tswatch{width:14px;height:14px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+  transition:all .12s;flex-shrink:0}
+.tswatch:hover{transform:scale(1.25)}
+.tswatch.cur{border-color:var(--tx);transform:scale(1.2)}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:var(--surface);border:1px solid var(--br2);border-radius:20px;
+  padding:7px 16px;font-family:var(--mono);font-size:10px;color:var(--tx);
+  z-index:600;transition:transform .2s,opacity .2s;opacity:0;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+[data-theme=cyber] .toast{border-color:var(--ac);box-shadow:0 0 20px rgba(255,45,120,.3)}
+/* ── CANVAS PERSPECTIVE GRID (cyber) ── */
+.grid-overlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.grid-overlay.show{opacity:1}
+/* ── CYBER SCANLINES ── */
+[data-theme=cyber] .cw::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0px,rgba(0,0,0,.04) 1px,transparent 1px,transparent 3px);
+  z-index:1}
+/* ── SAVED PLANS ── */
+.panel-tabs{display:flex;border-bottom:1px solid var(--br);flex-shrink:0}
+.ptab{flex:1;padding:9px 0;font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;text-align:center;cursor:pointer;
+  color:var(--tx3);border-bottom:2px solid transparent;transition:all .12s;background:none;border-top:none;border-left:none;border-right:none}
+.ptab:hover{color:var(--tx2)}
+.ptab.active{color:var(--ac);border-bottom-color:var(--ac)}
+[data-theme=cyber] .ptab.active{text-shadow:0 0 8px var(--ac)}
+.saved-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.saved-entry{background:var(--sf2);border:1px solid var(--br2);border-radius:6px;
+  padding:10px 13px;cursor:default}
+.saved-entry-hd{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.saved-entry-info{flex:1;min-width:0}
+.saved-entry-goals{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.saved-entry-meta{font-size:10px;color:var(--tx3)}
+.saved-entry-acts{display:flex;gap:5px;flex-shrink:0}
+.saved-act{padding:3px 9px;border-radius:4px;font-size:8px;font-family:var(--mono);font-weight:700;
+  cursor:pointer;border:1px solid var(--br2);background:transparent;color:var(--tx2);
+  transition:all .1s;white-space:nowrap}
+.saved-act:hover{border-color:var(--ac);color:var(--ac)}
+.saved-act.danger:hover{border-color:var(--co);color:var(--co)}
+.saved-act.pri{background:var(--ac);color:#fff;border-color:transparent}
+.saved-act.pri:hover{filter:brightness(1.1)}
+.saved-empty{text-align:center;padding:40px 20px;font-family:var(--mono);
+  font-size:10px;color:var(--tx3);line-height:1.8}
+/* ── MODAL HIDDEN (panel takes over) ── */
+.mov{display:none!important}
 </style>
 </head>
 <body>
@@ -259,8 +457,16 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
   </div>
   <button class="clr" id="clr">reset</button>
   <div class="cnt" id="cnt">— certs</div>
+  <div class="td"></div>
+  <div class="theme-row" id="themeRow">
+    <span class="theme-lbl">Theme</span>
+  </div>
+  <button class="cbtn" id="savedBtn" onclick="openSavedPlans()" style="flex-shrink:0;font-size:9px;display:none;padding:4px 10px">
+    📂 Plans <span id="savedBtnCount"></span>
+  </button>
   <button class="cmpbtn" id="cmpbtn" onclick="toggleTray()">COMPARE (<span id="cmpn">0</span>)</button>
 </div>
+<div class="toast" id="toast"></div>
 
 <!-- CANVAS -->
 <div class="cw" id="cw">
@@ -273,6 +479,23 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
       <filter id="gl2"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
     <rect id="svgbg" x="0" y="0" width="100%" height="100%" fill="url(#cgrad)"/>
+    <g id="perspGrid" style="display:none;pointer-events:none;opacity:0.18">
+      <!-- Horizontal lines (perspective) -->
+      <line x1="0%" y1="55%" x2="100%" y2="55%" stroke="#6600cc" stroke-width="0.5"/>
+      <line x1="10%" y1="62%" x2="90%" y2="62%" stroke="#6600cc" stroke-width="0.4"/>
+      <line x1="18%" y1="70%" x2="82%" y2="70%" stroke="#6600cc" stroke-width="0.35"/>
+      <line x1="26%" y1="79%" x2="74%" y2="79%" stroke="#6600cc" stroke-width="0.3"/>
+      <line x1="34%" y1="90%" x2="66%" y2="90%" stroke="#6600cc" stroke-width="0.25"/>
+      <!-- Vertical perspective lines converging to horizon center -->
+      <line x1="50%" y1="55%" x2="15%" y2="100%" stroke="#6600cc" stroke-width="0.4"/>
+      <line x1="50%" y1="55%" x2="28%" y2="100%" stroke="#6600cc" stroke-width="0.35"/>
+      <line x1="50%" y1="55%" x2="41%" y2="100%" stroke="#6600cc" stroke-width="0.3"/>
+      <line x1="50%" y1="55%" x2="59%" y2="100%" stroke="#6600cc" stroke-width="0.3"/>
+      <line x1="50%" y1="55%" x2="72%" y2="100%" stroke="#6600cc" stroke-width="0.35"/>
+      <line x1="50%" y1="55%" x2="85%" y2="100%" stroke="#6600cc" stroke-width="0.4"/>
+      <!-- Top horizon glow line -->
+      <line x1="0%" y1="55%" x2="100%" y2="55%" stroke="#ff2d78" stroke-width="1" opacity="0.5"/>
+    </g>
     <g id="zg">
       <g id="ll"></g><g id="hl"></g><g id="nl"></g>
     </g>
@@ -326,60 +549,108 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="mov" id="mov" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="mhd">
-      <div><div class="mtl">// CERTIFICATION PATH PLANNER</div>
-      <div class="msl">AI roadmap tailored to your goals — powered by Claude Sonnet</div></div>
-      <button class="mcl" onclick="closeModal()">✕</button>
+<!-- LEGACY MODAL STUB (hidden, panel takes over) -->
+<div class="mov" id="mov"></div>
+
+<!-- SLIDE-OUT PANEL -->
+<div class="panel-overlay" id="panelOverlay">
+  <div class="panel-backdrop" id="panelBackdrop" onclick="closeModal()"></div>
+  <div class="panel" id="panel">
+    <!-- Panel header -->
+    <div class="phd">
+      <div class="phd-info">
+        <div class="ptl">// CERTIFICATION PATH PLANNER</div>
+        <div class="psl">AI roadmap — powered by Claude Sonnet</div>
+      </div>
+      <div class="phd-acts">
+        <button class="exp-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="Expand to full screen" style="font-size:9px">⛶</button>
+        <button class="pcl" onclick="closeModal()">✕</button>
+      </div>
     </div>
-    <div class="mbd" id="mbd">
-      <div class="fg"><span class="flbl">Target certifications</span><div class="gchips" id="gchips"></div></div>
-      <div class="fg"><label class="flbl">Current certs & experience (optional)</label>
-        <textarea class="fta" id="fCur" placeholder="e.g. Security+, 2 years SOC, Python basics..."></textarea></div>
-      <div class="fg"><label class="flbl">Role goal (optional)</label>
-        <input type="text" class="fi" id="fRole" placeholder="e.g. Threat Intelligence Analyst, Cloud Security Engineer, Red Team Operator..."></div>
-      <div class="fg"><label class="flbl">Time available</label>
-        <input type="text" class="fi" id="fTime" placeholder="e.g. 12 months, 2 hrs/week..."></div>
-      <div class="fg" id="keyGroup">
-        <label class="flbl">Anthropic API key</label>
-        <div style="display:flex;gap:6px;align-items:center">
-          <div style="position:relative;flex:1">
-            <input type="password" class="fi" id="fKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" style="padding-right:72px">
-            <button id="keyToggle" onclick="toggleKeyVis()" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:9px;font-family:var(--mono);color:var(--tx3);padding:2px 4px">SHOW</button>
+    <!-- Tabs -->
+    <div class="panel-tabs">
+      <button class="ptab active" id="tabNew" onclick="switchTab('new')">New Plan</button>
+      <button class="ptab" id="tabSaved" onclick="switchTab('saved')">Saved Plans <span id="savedCount" style="opacity:.6"></span></button>
+    </div>
+    <!-- Panel body -->
+    <div class="pbd" id="pbd">
+      <!-- SAVED PLANS VIEW -->
+      <div id="savedView" style="display:none;flex:1">
+        <div class="saved-list" id="savedList"></div>
+      </div>
+      <div id="newView">
+      <div class="pcfg" id="pcfg">
+        <div class="fg"><span class="flbl">Target certifications</span><div class="gchips" id="gchips"></div></div>
+        <div class="fg"><label class="flbl">Current certs & experience (optional)</label>
+          <textarea class="fta" id="fCur" placeholder="e.g. Security+, 2 years SOC, Python basics..." style="min-height:52px"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <div class="fg" style="margin-bottom:0"><label class="flbl">Role goal</label>
+            <input type="text" class="fi" id="fRole" placeholder="e.g. Threat Intelligence Analyst..."></div>
+          <div class="fg" style="margin-bottom:0"><label class="flbl">Time available</label>
+            <input type="text" class="fi" id="fTime" placeholder="e.g. 12 months..."></div>
+        </div>
+        <!-- Key & Model collapsible -->
+        <details style="margin-bottom:8px">
+          <summary style="font-size:9px;font-family:var(--mono);color:var(--tx3);cursor:pointer;text-transform:uppercase;letter-spacing:.1em;list-style:none;display:flex;align-items:center;gap:5px;padding:4px 0">
+            <span id="keyModelSummary">⚙ API Key & Model</span>
+          </summary>
+          <div style="padding-top:10px">
+            <div class="fg" id="keyGroup">
+              <label class="flbl">Anthropic API key</label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <div style="position:relative;flex:1">
+                  <input type="password" class="fi" id="fKey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" style="padding-right:72px">
+                  <button id="keyToggle" onclick="toggleKeyVis()" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:9px;font-family:var(--mono);color:var(--tx3);padding:2px 4px">SHOW</button>
+                </div>
+                <button class="cbtn" id="keySaveBtn" onclick="saveKey()" style="flex-shrink:0">Save</button>
+                <button class="cbtn dan" id="keyClearBtn" onclick="clearKey()" style="flex-shrink:0;display:none">Clear</button>
+              </div>
+              <div id="keyStatus" style="margin-top:4px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
+              <div style="margin-top:5px;padding:6px 8px;background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.2);border-radius:4px;font-size:9px;font-family:var(--mono);color:var(--tx3);line-height:1.6">
+                🔒 <strong style="color:var(--tx2)">sessionStorage only</strong> — clears on tab close.
+                <a href="https://console.anthropic.com" target="_blank" style="color:var(--ac)">console.anthropic.com</a>
+              </div>
+            </div>
+            <div class="fg" id="modelGroup" style="margin-bottom:4px">
+              <label class="flbl">Model <span style="color:var(--tx3);font-size:8px;text-transform:none;letter-spacing:0">(update if rejected)</span></label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="text" class="fi" id="fModel" placeholder="claude-sonnet-4-5" autocomplete="off" spellcheck="false" style="font-family:var(--mono);font-size:11px">
+                <button class="cbtn" id="modelSaveBtn" onclick="saveModel()" style="flex-shrink:0">Save</button>
+                <button class="cbtn dan" id="modelResetBtn" onclick="resetModel()" style="flex-shrink:0">Reset</button>
+              </div>
+              <div id="modelStatus" style="margin-top:3px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
+              <div style="margin-top:4px;font-size:9px;font-family:var(--mono);color:var(--tx3)">
+                <a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" style="color:var(--ac)">docs.anthropic.com/en/docs/about-claude/models</a>
+              </div>
+            </div>
           </div>
-          <button class="cbtn" id="keySaveBtn" onclick="saveKey()" style="flex-shrink:0">Save</button>
-          <button class="cbtn dan" id="keyClearBtn" onclick="clearKey()" style="flex-shrink:0;display:none">Clear</button>
-        </div>
-        <div id="keyStatus" style="margin-top:5px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
-        <div style="margin-top:6px;padding:7px 9px;background:rgba(79,142,247,.07);border:1px solid rgba(79,142,247,.2);border-radius:4px;font-size:9px;font-family:var(--mono);color:var(--tx3);line-height:1.7">
-          🔒 Key is stored in <strong style="color:var(--tx2)">sessionStorage only</strong> — clears when you close the tab.<br>
-          Never committed to the repo. Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--ac)">console.anthropic.com</a>
-        </div>
-      </div>
-      <div class="fg" id="modelGroup">
-        <label class="flbl">Model <span style="color:var(--tx3);font-size:8px;text-transform:none;letter-spacing:0">(update if API rejects model name)</span></label>
-        <div style="display:flex;gap:6px;align-items:center">
-          <input type="text" class="fi" id="fModel" placeholder="claude-sonnet-4-5" autocomplete="off" spellcheck="false" style="font-family:var(--mono);font-size:11px">
-          <button class="cbtn" id="modelSaveBtn" onclick="saveModel()" style="flex-shrink:0">Save</button>
-          <button class="cbtn dan" id="modelResetBtn" onclick="resetModel()" style="flex-shrink:0">Reset</button>
-        </div>
-        <div id="modelStatus" style="margin-top:4px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
-        <div style="margin-top:5px;font-size:9px;font-family:var(--mono);color:var(--tx3);line-height:1.6">
-          Current models: <a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" style="color:var(--ac)">docs.anthropic.com/en/docs/about-claude/models</a>
+        </details>
+        <!-- Action bar -->
+        <div style="display:flex;align-items:center;gap:7px;padding-top:6px">
+          <button class="cbtn pri" id="genBtn" onclick="genPath()">Generate Roadmap ↗</button>
+          <button class="cbtn" onclick="closeModal()">Close</button>
+          <span style="font-size:8px;font-family:var(--mono);color:var(--tx3);margin-left:auto" id="modelLabel">claude-sonnet-4-5</span>
         </div>
       </div>
-      <div class="pout" id="pout"></div>
-    </div>
-    <div class="mft">
-      <button class="cbtn pri" id="genBtn" onclick="genPath()">Generate Roadmap ↗</button>
-      <button class="cbtn" onclick="closeModal()">Cancel</button>
-      <span style="font-size:8px;font-family:var(--mono);color:var(--tx3);margin-left:auto" id="modelLabel">claude-sonnet-4-5</span>
+      <!-- Loading / output area -->
+      <div class="pout" id="pout" style="padding:0 18px 10px"></div>
+      <!-- Roadmap output rendered here -->
+      <div class="pout-wrap" id="poutWrap" style="display:none">
+        <div class="export-bar" id="exportBar">
+          <span class="exp-lbl">Export</span>
+          <button class="exp-btn" onclick="exportMarkdown()">📄 Markdown</button>
+          <button class="exp-btn" onclick="exportPDF()">🖨 PDF</button>
+          <button class="exp-btn" onclick="copyToClipboard()">📋 Copy</button>
+          <button class="exp-btn" onclick="saveRoadmap()" style="margin-left:auto;background:var(--ac);color:#fff;border-color:transparent">💾 Save Plan</button>
+        </div>
+        <div id="roadmapOut" class="roadmap-out" style="border-radius:0;border:none;border-top:1px solid var(--br2);padding:20px 22px"></div>
+      </div>
+      </div><!-- /newView -->
     </div>
   </div>
 </div>
 <div class="tt" id="tt"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script>
 const CERTS = [
@@ -743,6 +1014,155 @@ function vis(c){
   return true;
 }
 
+// ── THEME SYSTEM ────────────────────────────────────────────────────────────
+const THEMES={
+  dark: {label:"Dark",    swatch:"#4f8ef7", nodeBg:"rgba(8,10,16,0.9)",
+    cGrad1:"#171c30",cGrad2:"#0c0e15", grid:false, glow:false,
+    centerStroke:"#2a3050",centerText:"#c8d4f0",centerAccent:"#4f8ef7"},
+  light:{label:"Light",   swatch:"#2563eb", nodeBg:"rgba(240,242,247,0.92)",
+    cGrad1:"#d8deee",cGrad2:"#e8ecf5", grid:false, glow:false,
+    centerStroke:"#c0c8dc",centerText:"#334155",centerAccent:"#2563eb"},
+  defcon:{label:"DEFCON", swatch:"#ff6600", nodeBg:"rgba(0,0,0,0.88)",
+    cGrad1:"#0d0800",cGrad2:"#000", grid:false, glow:false,
+    centerStroke:"#1f1f1f",centerText:"#ff9900",centerAccent:"#ff6600"},
+  dracula:{label:"Dracula",swatch:"#bd93f9",nodeBg:"rgba(40,42,54,0.92)",
+    cGrad1:"#2d2f3f",cGrad2:"#21222c", grid:false, glow:false,
+    centerStroke:"#44475a",centerText:"#f8f8f2",centerAccent:"#bd93f9"},
+  hc:    {label:"Hi-Con", swatch:"#ffff00", nodeBg:"rgba(0,0,0,0.95)",
+    cGrad1:"#050505",cGrad2:"#000", grid:false, glow:false,
+    centerStroke:"#fff",centerText:"#fff",centerAccent:"#ffff00"},
+  cyber: {label:"Cyber",  swatch:"#ff2d78", nodeBg:"rgba(10,0,16,0.88)",
+    cGrad1:"#150025",cGrad2:"#0a0010", grid:true, glow:true,
+    centerStroke:"#ff2d78",centerText:"#f0e6ff",centerAccent:"#ff2d78"}
+};
+const THEME_STORAGE="scr_theme";
+let curTheme=localStorage.getItem(THEME_STORAGE)||"dark";
+
+function applyTheme(key){
+  curTheme=key;
+  localStorage.setItem(THEME_STORAGE,key);
+  document.documentElement.setAttribute("data-theme",key==="dark"?"":key);
+  // Update gradient stops
+  const t=THEMES[key]||THEMES.dark;
+  const g=document.getElementById("cgrad");
+  if(g){
+    g.querySelectorAll("stop")[0].setAttribute("stop-color",t.cGrad1);
+    g.querySelectorAll("stop")[1].setAttribute("stop-color",t.cGrad2);
+  }
+  // Perspective grid visibility
+  const grid=document.getElementById("perspGrid");
+  if(grid) grid.style.display=t.grid?"block":"none";
+  // Scanlines (handled by CSS [data-theme=cyber] .cw::after)
+  // Update swatch active state
+  document.querySelectorAll(".tswatch").forEach(s=>s.classList.toggle("cur",s.dataset.theme===key));
+  // Rebuild map to apply node colors
+  buildMap();
+  showToast(t.label+" theme");
+}
+
+function buildThemeSwatches(){
+  const row=document.getElementById("themeRow");
+  Object.entries(THEMES).forEach(([key,t])=>{
+    const s=document.createElement("div");
+    s.className="tswatch"+(key===curTheme?" cur":"");
+    s.dataset.theme=key;
+    s.title=t.label;
+    s.style.background=t.swatch;
+    s.onclick=()=>applyTheme(key);
+    row.appendChild(s);
+  });
+}
+
+// ── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),2000);
+}
+
+// ── FULLSCREEN PANEL ─────────────────────────────────────────────────────────
+let isPanelFull=false;
+function toggleFullscreen(){
+  isPanelFull=!isPanelFull;
+  const panel=document.getElementById("panel");
+  const btn=document.getElementById("fullscreenBtn");
+  panel.style.width=isPanelFull?"100vw":"520px";
+  panel.style.maxWidth=isPanelFull?"100vw":"92vw";
+  btn.textContent=isPanelFull?"⊠":"⛶";
+}
+
+// ── EXPORT FUNCTIONS ─────────────────────────────────────────────────────────
+let lastRawMarkdown="";
+
+function exportMarkdown(){
+  if(!lastRawMarkdown){showToast("No roadmap generated yet");return;}
+  const blob=new Blob([lastRawMarkdown],{type:"text/markdown"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const ts=new Date().toISOString().slice(0,10);
+  a.href=url;a.download=`cert-roadmap-${ts}.md`;a.click();
+  URL.revokeObjectURL(url);
+  showToast("Markdown downloaded");
+}
+
+function exportPDF(){
+  if(!lastRawMarkdown){showToast("No roadmap generated yet");return;}
+  const win=window.open("","_blank");
+  const theme=curTheme;
+  const isDark=theme!=="light";
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Cert Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
+body{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.75;
+  color:${isDark?"#dce2f0":"#334155"};background:${isDark?"#0c0e15":"#fff"};
+  max-width:780px;margin:40px auto;padding:0 40px}
+h1{font-size:22px;font-weight:500;border-bottom:2px solid #4f8ef7;padding-bottom:10px;margin-bottom:20px}
+h2{font-size:14px;font-family:'Space Mono';text-transform:uppercase;letter-spacing:.08em;
+  color:#4f8ef7;margin:22px 0 8px}
+h3{font-size:14px;font-weight:500;margin:16px 0 6px}
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th{background:${isDark?"#1a1d2a":"#f0f2f7"};padding:8px 12px;text-align:left;
+  font-family:'Space Mono';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+td{padding:7px 12px;border-bottom:1px solid ${isDark?"#22263a":"#e2e6ef"}}
+blockquote{border-left:3px solid #4f8ef7;padding:8px 12px;margin:10px 0;
+  background:${isDark?"rgba(79,142,247,.08)":"rgba(37,99,235,.05)"};border-radius:0 4px 4px 0}
+code{font-family:'Space Mono';font-size:11px;background:${isDark?"#1a1d2a":"#e8ecf5"};padding:2px 5px;border-radius:3px}
+pre{background:${isDark?"#1a1d2a":"#e8ecf5"};padding:12px;border-radius:5px;overflow-x:auto}
+hr{border:none;border-top:1px solid ${isDark?"#22263a":"#dde2ee"};margin:16px 0}
+@media print{body{margin:20px;padding:0 20px}@page{margin:1.5cm}}
+</style></head><body>${marked.parse(lastRawMarkdown)}</body></html>`);
+  win.document.close();
+  setTimeout(()=>{win.focus();win.print();},400);
+  showToast("Print dialog opened");
+}
+
+function copyToClipboard(){
+  if(!lastRawMarkdown){showToast("No roadmap generated yet");return;}
+  navigator.clipboard.writeText(lastRawMarkdown).then(()=>showToast("Copied to clipboard")).catch(()=>{
+    const ta=document.createElement("textarea");
+    ta.value=lastRawMarkdown;document.body.appendChild(ta);ta.select();
+    document.execCommand("copy");document.body.removeChild(ta);
+    showToast("Copied to clipboard");
+  });
+}
+
+const SAVE_KEY="scr_saved_roadmaps";
+function saveRoadmap(){
+  if(!lastRawMarkdown){showToast("No roadmap to save");return;}
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  const goals=Array.from(cmpSet.values()).map(c=>c.label).join(", ")||"Custom plan";
+  const entry={ts:Date.now(),date:new Date().toLocaleDateString(),goals,md:lastRawMarkdown};
+  saved.unshift(entry);
+  if(saved.length>5)saved.pop();
+  localStorage.setItem(SAVE_KEY,JSON.stringify(saved));
+  updateSavedCount();
+  showToast("Plan saved ("+saved.length+"/5) — see Saved Plans tab");
+}
+
 // D3 zoom setup
 const svg=d3.select("#svg");
 const zg=d3.select("#zg");
@@ -768,13 +1188,18 @@ function buildMap(){
     .attr("fill","none").attr("stroke","#1a1e2a").attr("stroke-width",0.5).attr("stroke-dasharray","1,40").attr("opacity",0.3);
 
   // Center node
+  const thm=THEMES[curTheme]||THEMES.dark;
   const cg=nl.append("g").attr("transform",`translate(${cx},${cy})`);
-  cg.append("circle").attr("r",50).attr("fill","url(#cgrad)").attr("stroke","#2a3050").attr("stroke-width",1.5);
-  cg.append("circle").attr("r",38).attr("fill","none").attr("stroke","#3a4570").attr("stroke-width",0.5).attr("stroke-dasharray","3,4");
-  cg.append("text").attr("text-anchor","middle").attr("dy",-6).attr("fill","#c8d4f0")
+  if(curTheme==="cyber"){
+    // Cyberpunk: glowing double-ring center
+    cg.append("circle").attr("r",54).attr("fill","none").attr("stroke","#ff2d78").attr("stroke-width",0.5).attr("opacity",0.4);
+  }
+  cg.append("circle").attr("r",50).attr("fill","url(#cgrad)").attr("stroke",thm.centerStroke).attr("stroke-width",1.5);
+  cg.append("circle").attr("r",38).attr("fill","none").attr("stroke",thm.centerStroke).attr("stroke-width",0.5).attr("stroke-dasharray","3,4");
+  cg.append("text").attr("text-anchor","middle").attr("dy",-6).attr("fill",thm.centerText)
     .attr("font-size","11").attr("font-family","Space Mono,monospace").attr("font-weight","700")
     .attr("letter-spacing","0.1em").text("SECURITY");
-  cg.append("text").attr("text-anchor","middle").attr("dy",8).attr("fill","#4f8ef7")
+  cg.append("text").attr("text-anchor","middle").attr("dy",8).attr("fill",thm.centerAccent)
     .attr("font-size","9").attr("font-family","Space Mono,monospace").attr("letter-spacing","0.14em").text("CERTIFICATIONS");
 
   DOMS.forEach((dom,i)=>{
@@ -798,9 +1223,12 @@ function buildMap(){
 
     // Domain label pill
     const dg=nl.append("g").attr("transform",`translate(${dx},${dy})`);
+    const domNodeBg=curTheme==="light"?"rgba(240,242,247,0.95)":curTheme==="cyber"?meta.dk+"cc":meta.dk||"#1a1a1a";
+    const domGlow=curTheme==="cyber"&&active?`drop-shadow(0 0 6px ${meta.c}88)`:null;
     dg.append("rect").attr("x",-29).attr("y",-12).attr("width",58).attr("height",24)
-      .attr("rx",12).attr("fill",meta.dk||"#1a1a1a")
-      .attr("stroke",meta.c).attr("stroke-width",1.5).attr("opacity",baseAlpha);
+      .attr("rx",12).attr("fill",domNodeBg)
+      .attr("stroke",meta.c).attr("stroke-width",1.5).attr("opacity",baseAlpha)
+      .attr("filter",domGlow);
     dg.append("text").attr("text-anchor","middle").attr("dy",4)
       .attr("fill",meta.c).attr("font-size","9").attr("font-family","Space Mono,monospace")
       .attr("font-weight","700").attr("letter-spacing","0.1em").attr("opacity",baseAlpha)
@@ -839,11 +1267,14 @@ function buildMap(){
           .attr("transform",`translate(${nx},${ny})`)
           .attr("data-id",cert.id);
 
+        const nodeBg=THEMES[curTheme]?.nodeBg||"rgba(8,10,16,0.9)";
+        const glowFilter=curTheme==="cyber"&&sel?"url(#gl)":null;
         ng.append("rect")
           .attr("x",-cw/2).attr("y",-ch/2).attr("width",cw).attr("height",ch).attr("rx",3)
-          .attr("fill",sel?color+"22":"rgba(8,10,16,0.9)")
+          .attr("fill",sel?color+"33":nodeBg)
           .attr("stroke",color).attr("stroke-width",sel?2:0.9)
-          .attr("stroke-opacity",cert.dead?0.4:1);
+          .attr("stroke-opacity",cert.dead?0.4:1)
+          .attr("filter",glowFilter);
 
         ng.append("text").attr("text-anchor","middle").attr("dy",4)
           .attr("fill",sel?"#fff":color)
@@ -1148,9 +1579,10 @@ function syncModelUI(){
   }
 }
 
-// MODAL / PLANNER
+// SLIDE-OUT PANEL
 function openModal(){
   if(cmpSet.size===0)return;
+  // Populate chips
   const chips=document.getElementById("gchips");chips.innerHTML="";
   cmpSet.forEach(cert=>{
     const color=cc(cert);
@@ -1158,15 +1590,30 @@ function openModal(){
     ch.style.borderColor=color;ch.style.color=color;ch.textContent=cert.label;
     chips.appendChild(ch);
   });
+  // Reset output area
   document.getElementById("pout").className="pout";
   document.getElementById("pout").innerHTML="";
+  document.getElementById("poutWrap").style.display="none";
   document.getElementById("genBtn").disabled=false;
   document.getElementById("genBtn").textContent="Generate Roadmap ↗";
   syncKeyUI();
   syncModelUI();
-  document.getElementById("mov").classList.add("open");
+  // Update key/model summary indicator
+  const k=getKey();
+  document.getElementById("keyModelSummary").textContent=k?"✓ API Key & Model":"⚙ API Key & Model (required)";
+  // Open panel
+  document.getElementById("panelOverlay").classList.add("open");
 }
-function closeModal(){document.getElementById("mov").classList.remove("open");}
+function closeModal(){
+  document.getElementById("panelOverlay").classList.remove("open");
+  // Reset fullscreen
+  if(isPanelFull){
+    isPanelFull=false;
+    document.getElementById("panel").style.width="520px";
+    document.getElementById("panel").style.maxWidth="92vw";
+    document.getElementById("fullscreenBtn").textContent="⛶";
+  }
+}
 
 async function genPath(){
   // Resolve key: use saved session key, fall back to whatever is in the input field
@@ -1238,28 +1685,157 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
     const text=data.content?.map(b=>b.text||"").join("")||"";
     if(!text)throw new Error("Empty response from API");
 
-    const formatted=text
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-      .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-      .replace(/^(\d+\. .*)/gm,"<strong style=\"color:#4f8ef7\">$1</strong>")
-      .replace(/^([A-Z][A-Z ]{2,}[A-Z]( CHECK| PATH| WINS| OUTS)?:?$)/gm,
-        "<span style=\"color:#4f8ef7;font-size:9px;letter-spacing:.1em\">$1</span>");
-    pout.innerHTML=`<div class="roadmap-out">${formatted}</div>`;
+    // Store raw markdown for export
+    lastRawMarkdown=text;
+    // Render with marked.js
+    const rendered=typeof marked!=="undefined"?marked.parse(text):text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    document.getElementById("roadmapOut").innerHTML=rendered;
+    document.getElementById("poutWrap").style.display="block";
+    pout.className="pout";
+    pout.innerHTML="";
+    // Scroll output into view
+    document.getElementById("poutWrap").scrollIntoView({behavior:"smooth",block:"start"});
   }catch(err){
-    // Distinguish CORS/network errors from API errors
     const isCors=err instanceof TypeError&&err.message.includes("fetch");
-    pout.innerHTML=`<div class="err">⚠ ${isCors
-      ? "Network error — if running from a local file, open via a local server instead of double-clicking the file. Quick fix: run <code style='background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px'>npx serve .</code> in the project folder and open the localhost URL."
-      : err.message}</div>`;
+    const msg=isCors
+      ? "Network error — open via a local server: run <code style='background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px'>npx serve .</code> in the project folder, then open the localhost URL."
+      : err.message;
+    pout.className="pout show";
+    pout.innerHTML=`<div class="err" style="margin:12px 18px">⚠ ${msg}</div>`;
+    document.getElementById("poutWrap").style.display="none";
   }finally{
     genBtn.disabled=false;genBtn.textContent="Regenerate ↗";
   }
 }
 
+// ── SAVED PLANS VIEWER ──────────────────────────────────────────────────────
+function switchTab(tab){
+  const isNew = tab==="new";
+  document.getElementById("tabNew").classList.toggle("active", isNew);
+  document.getElementById("tabSaved").classList.toggle("active", !isNew);
+  document.getElementById("newView").style.display = isNew ? "" : "none";
+  document.getElementById("savedView").style.display = isNew ? "none" : "";
+  if(!isNew) loadSavedPlans();
+}
+
+function updateSavedCount(){
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  const n=saved.length;
+  // Tab badge
+  const el=document.getElementById("savedCount");
+  if(el) el.textContent=n>0?`(${n})`:"";
+  // Topbar button
+  const btn=document.getElementById("savedBtn");
+  const btnCnt=document.getElementById("savedBtnCount");
+  if(btn){
+    btn.style.display=n>0?"":"none";
+    if(btnCnt) btnCnt.textContent=n>0?`(${n})`:"";
+  }
+}
+
+function openSavedPlans(){
+  // Open panel directly on saved plans tab
+  // Reset panel state
+  document.getElementById("pout").className="pout";
+  document.getElementById("pout").innerHTML="";
+  document.getElementById("poutWrap").style.display="none";
+  syncKeyUI();
+  syncModelUI();
+  document.getElementById("keyModelSummary").textContent=getKey()?"✓ API Key & Model":"⚙ API Key & Model (required)";
+  document.getElementById("panelOverlay").classList.add("open");
+  switchTab("saved");
+}
+
+function loadSavedPlans(){
+  const list=document.getElementById("savedList");
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  if(saved.length===0){
+    list.innerHTML=`<div class="saved-empty">
+      No saved plans yet.<br>
+      Generate a roadmap and click <strong style="color:var(--tx2)">💾 Save Plan</strong> to store it here.<br>
+      <span style="color:var(--tx3)">Up to 5 plans saved in your browser.</span>
+    </div>`;
+    return;
+  }
+  list.innerHTML="";
+  saved.forEach((entry,idx)=>{
+    const el=document.createElement("div");
+    el.className="saved-entry";
+    // Truncate goals for display
+    const goalDisplay=entry.goals||"Untitled plan";
+    const preview=(entry.md||"").slice(0,120).replace(/[#*`]/g,"").trim()+"…";
+    el.innerHTML=`
+      <div class="saved-entry-hd">
+        <div class="saved-entry-info">
+          <div class="saved-entry-goals" title="${goalDisplay}">${goalDisplay}</div>
+          <div class="saved-entry-meta">${entry.date||"Unknown date"} · ${Math.round((entry.md||"").length/1000)}k chars</div>
+        </div>
+        <div class="saved-entry-acts">
+          <button class="saved-act pri" onclick="loadPlanIntoPanel(${idx})">Load</button>
+          <button class="saved-act" onclick="exportSaved(${idx})">📄</button>
+          <button class="saved-act danger" onclick="deleteSavedPlan(${idx})">✕</button>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--tx3);line-height:1.5;overflow:hidden;
+        text-overflow:ellipsis;white-space:nowrap;max-width:100%">${preview}</div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function loadPlanIntoPanel(idx){
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  const entry=saved[idx];
+  if(!entry)return;
+  lastRawMarkdown=entry.md;
+  // Render in output area
+  document.getElementById("roadmapOut").innerHTML=
+    typeof marked!=="undefined"?marked.parse(entry.md):entry.md;
+  document.getElementById("poutWrap").style.display="block";
+  document.getElementById("pout").className="pout";
+  document.getElementById("pout").innerHTML="";
+  // Switch to new plan tab to show the output
+  switchTab("new");
+  // Scroll to roadmap
+  setTimeout(()=>document.getElementById("poutWrap").scrollIntoView({behavior:"smooth",block:"start"}),100);
+  showToast("Plan loaded: "+entry.goals.split(",")[0]);
+}
+
+function exportSaved(idx){
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  const entry=saved[idx];
+  if(!entry)return;
+  const blob=new Blob([entry.md],{type:"text/markdown"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`cert-roadmap-${entry.date||"saved"}.md`;a.click();
+  URL.revokeObjectURL(url);
+  showToast("Markdown downloaded");
+}
+
+function deleteSavedPlan(idx){
+  const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");
+  const entry=saved[idx];
+  if(!entry)return;
+  if(!confirm(`Delete plan for "${entry.goals}"?`))return;
+  saved.splice(idx,1);
+  localStorage.setItem(SAVE_KEY,JSON.stringify(saved));
+  updateSavedCount();
+  loadSavedPlans();
+  showToast("Plan deleted");
+}
+
+// Update saveRoadmap to refresh count
+const _origSaveRoadmap=saveRoadmap;
+// Override at end of script to call updateSavedCount after save
+
 // RESIZE
 const ro=new ResizeObserver(()=>buildMap());
 ro.observe(document.getElementById("cw"));
-buildMap();
+// INIT
+buildThemeSwatches();
+applyTheme(curTheme);  // applies CSS attr, gradient, grid, builds map
+updateSavedCount();    // populate saved plans badge on tab
 fitMap();
 </script>
 </body>

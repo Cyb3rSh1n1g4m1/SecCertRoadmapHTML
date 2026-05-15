@@ -1,80 +1,136 @@
 # SecCertRoadmapHTML
 Security Certification Roadmap — Interactive Mind Map
 
-This is a fork of [pauljerimy.com/security-certification-roadmap](https://pauljerimy.com/security-certification-roadmap/), rebuilt as a fully interactive D3.js mind map with real-time filtering, a multi-cert compare tray, and an AI-powered certification path planner.
+This is a fork of [pauljerimy.com/security-certification-roadmap](https://pauljerimy.com/security-certification-roadmap/), rebuilt as a fully interactive D3.js mind map with six themes, real-time filtering, a multi-cert compare tray, AI-powered path planning, and a saved plans viewer.
 
-The tool is a single self-contained HTML file. No build step, no dependencies to install, no server required — open it in any modern browser.
+Single self-contained HTML file. No build step, no dependencies to install, no server required — open it in any modern browser.
+
+> **Note:** The AI Path Planner calls the Anthropic API directly from the browser. Run the file via a local server (`npx serve .`) rather than double-clicking it, to avoid CORS errors.
 
 ---
 
 ## Usage
 
+### Navigation
 1. Download `security-cert-mindmap.html`
-2. Open it in a browser
-3. Navigate the mind map: **scroll** to zoom, **drag** to pan
-4. Filter by domain, skill level, or ops team using the top bar
-5. Toggle **DECLUTTER** to reduce to ~66 high-signal curated certs
-6. Press **/** to search, **Escape** to clear
-7. Click any cert node to add it to the **Compare Tray**
-8. With certs in the tray, click **Plan Path ↗** to open the AI path planner
+2. Serve it locally: `npx serve .` then open `http://localhost:3000/security-cert-mindmap.html`
+3. **Scroll** to zoom · **Drag** to pan · **/** to search · **Escape** to clear
+4. Filter by domain, skill level, ops team, or max cost using the top bar
+5. Toggle **DECLUTTER** to reduce to ~66 curated high-signal certs
+6. **Click** any cert to add to the Compare Tray
+7. **Double-click** any cert to open its official page in a new tab
+8. **Right-click** any cert for a context menu (open, add/remove from tray)
 
-### AI Path Planner — API Key
+### AI Path Planner
+1. Select target certs by clicking them (they appear in the Compare Tray at the bottom)
+2. Click **Plan Path ↗** in the tray — the slide-out panel opens on the right
+3. Fill in your current certs/experience, role goal, and time available
+4. Expand **⚙ API Key & Model** — paste your Anthropic key and click **Save**
+5. Click **Generate Roadmap ↗**
 
-The path planner calls the Anthropic Claude API. No key is stored in this file or the repository. When you open the planner modal, paste your key into the **Anthropic API Key** field and click **Save**.
+The roadmap renders as formatted markdown with headers, tables, and blockquotes. Use the export bar below the output to:
+- **📄 Markdown** — download as a `.md` file (opens in Obsidian, VS Code, Notion, GitHub)
+- **🖨 PDF** — opens a themed print dialog
+- **📋 Copy** — copies raw markdown to clipboard
+- **💾 Save Plan** — saves to browser localStorage (up to 5 plans)
 
-The key is stored in `sessionStorage` only — it is tab-scoped, clears automatically when the tab closes, and is never written to disk or committed to the repo.
+### Saved Plans
+Saved plans appear in the **Saved Plans** tab inside the panel, and via the **📂 Plans** button in the topbar (visible once at least one plan is saved). Each saved entry shows the target certs, date, and a content preview. Actions: **Load** (renders the plan back into the output area), **📄** (direct markdown download), **✕** (delete with confirmation).
 
-Get a key at [console.anthropic.com](https://console.anthropic.com)
+### Themes
+Six themes available via the color swatch row in the topbar:
+- **Dark** (default) — SOC terminal aesthetic
+- **Light** — clean professional, good for sharing screenshots
+- **DEFCON** — amber terminal, conference aesthetic
+- **Dracula** — deep purple-gray, most recognized dark theme in dev tooling
+- **Hi-Contrast** — pure black/white, accessibility and projector use
+- **Cyberpunk** — hot pink / electric cyan neon, perspective grid canvas, scanline overlay
 
-> **If you fork this repo:** do not add your key to the HTML file. Do not create a `.env` file without adding it to `.gitignore` first.
+Theme selection persists in `localStorage` across sessions.
+
+### API Key & Model
+The API key is stored in `sessionStorage` only — tab-scoped, clears automatically on tab close, never written to disk or committed to the repo. Get a key at [console.anthropic.com](https://console.anthropic.com).
+
+The model string is configurable at runtime under **⚙ API Key & Model** without touching the file. If Anthropic releases a new model and the current string is rejected, update it there. Current model list: [docs.anthropic.com/en/docs/about-claude/models](https://docs.anthropic.com/en/docs/about-claude/models)
+
+> **If you fork this repo:** do not add your API key to the HTML file. Do not create a `.env` file without first adding it to `.gitignore`.
 
 ---
 
 ## Change Log
 
 ### May 2025 (this fork):
-- Rebuilt visualization from static CSS grid to interactive D3.js radial mind map
-- Center node radiates to 8 domain clusters; cert nodes orbit each domain in concentric arcs by skill level (Entry → Expert)
+
+**Mind map visualization**
+- Rebuilt from static CSS grid to interactive D3.js radial mind map
+- Center node radiates to 8 domain clusters; cert nodes orbit in concentric arcs by skill level (Entry → Expert)
 - Infinite pan (drag) and zoom (scroll, 0.18×–3.5×) via D3 zoom behavior
-- Preserved original color coding: Network=green, IAM=teal, Architecture=orange, Asset=yellow, GRC=gray, Audit=purple, Software Security=blue, Ops=red
-- Blue Team ops and Red Team ops rendered in distinct colors (#3a7bd5 / #d05050) within the Operations domain
-- Level pip dot on each cert node encodes skill tier (bottom-right corner)
-- Key cert indicator dot (top-left corner) marks declutter-visible certs
-- Dead/stale URL certs render at reduced opacity with amber ⚠ glyph
-- Added domain filter: ALL / NET / IAM / ARCH / ASSET / GRC / AUDIT / SDEV / OPS
-- Added skill level filter: ALL / Entry / Intermediate / Advanced / Expert
-- Added Ops subcat filter: ALL / Blue Team / Red Team
-- All three filters compound — e.g. "Advanced Red Team" isolates only those nodes
-- Inactive domains fade to ~8% opacity rather than disappearing, preserving spatial context
-- Added DECLUTTER mode: toggle filters to ~66 curated high-signal certs
-  - key:true flag added to industry-recognized certs across all domains
-  - Designed for presentations and onboarding conversations
-  - Stacks correctly with domain and level filters
-- Added live search: real-time filter against cert name and full description (cost, vendor, etc.)
-  - Press / to focus search from anywhere on the page
-  - Press Escape to clear the query
-  - "reset" link appears whenever any filter is active
-- Added hover tooltips: full cert name, domain, subcat, cost, skill level badge, dead-link warning, and compare tray context hint
-- Added compare tray: click any node to add to a slide-up tray (max 8 certs)
-  - Each card shows name, domain, level, subcat, and cost
-  - Individual × remove or bulk Clear
-  - Tray only appears in topbar when at least one cert is selected
-- Added AI Certification Path Planner powered by claude-sonnet-4-20250514
-  - Takes compare tray contents as target certifications
-  - User inputs: current certs/experience, role goal, time available
-  - Returns: Alignment Check, Prerequisites, Ordered Path with cost and study time, Quick Wins, Watch Outs (lab costs, access windows, logistical traps)
-  - Regenerate button for iterating with updated inputs
-- Added runtime API key management (Option 3 — no backend required)
-  - Key entered in the planner modal at runtime, never stored in the file or repo
-  - Stored in sessionStorage only: tab-scoped, clears on tab close
-  - Masked display after save, Show/Hide toggle for verification
-  - Invalid/expired keys auto-cleared on authentication error with guidance
-  - Source comment block at top of file documents the security model
-- Flagged stale/dead URLs identified during audit:
-  - eLearnSecurity certs (migrated to INE): eCTHP, eCDFP flagged
-  - Offensive Security domain rename (offensive-security.com → offsec.com)
-  - VMware/Broadcom cert pages flagged after acquisition migration: VCDX DCV, VCIX DCV, VCP DCV
-  - AccessData ACE flagged (acquired by Exterro, status unknown)
+- Original domain color coding preserved: Network=green, IAM=teal, Architecture=orange, Asset=yellow, GRC=gray, Audit=purple, Software Security=blue, Ops=red
+- Blue Team / Red Team ops rendered in distinct colors within the Operations domain
+- Level pip dot (bottom-right of each node) encodes skill tier
+- Key cert indicator dot (top-left) marks declutter-visible certs
+- Dead/stale URL certs flagged with amber ⚠ glyph at reduced opacity
+
+**Filters**
+- Domain filter: ALL / NET / IAM / ARCH / ASSET / GRC / AUDIT / SDEV / OPS
+- Skill level filter: ALL / Entry / Intermediate / Advanced / Expert
+- Ops subcat filter: ALL / Blue Team / Red Team
+- Max cost slider: $0–$5,000 in $50 increments, parses cost from cert tooltip data
+- All filters compound and stack correctly
+- DECLUTTER mode: ~66 curated key certs, designed for presentations
+- Live search against cert name and full description; press `/` to focus, `Escape` to clear
+- "reset" link clears all active filters at once
+
+**Cert interaction**
+- Single click → toggle in Compare Tray
+- Double-click → open official certification page in new tab
+- Right-click → context menu with Open / Add to Tray / Remove from Tray
+- Hover tooltip shows full name, domain, cost, skill level badge, and clickable URL
+- Compare Tray cert names are clickable links to cert pages
+
+**AI Path Planner**
+- Slide-out panel (replaces modal) — 520px wide, full-screen expand button (⛶)
+- Panel has two tabs: New Plan and Saved Plans
+- Inputs: target certs, current experience, role goal, time available
+- AI returns structured roadmap: Alignment Check, Prerequisites, Ordered Path, Quick Wins, Watch Outs
+- Output rendered as full markdown (marked.js 9.1.6): headers, tables, blockquotes, code blocks
+- Configurable model string at runtime — update without touching the file
+- Model errors surface with direct link to Anthropic model docs
+
+**Export**
+- Markdown download (`.md` with date stamp)
+- PDF via themed print dialog (opens styled HTML in new tab)
+- Copy to clipboard (raw markdown)
+- Save Plan to localStorage (up to 5, with timestamps and cert targets)
+
+**Saved Plans viewer**
+- Saved Plans tab in the panel lists all stored roadmaps
+- Each entry shows cert targets, save date, content preview
+- Load: renders plan back into output area
+- Per-entry markdown download without loading
+- Delete with confirmation dialog
+- 📂 Plans button appears in topbar when plans exist
+
+**Themes**
+- Six themes: Dark, Light, DEFCON, Dracula, Hi-Contrast, Cyberpunk
+- Color swatch row in topbar; theme persists in localStorage
+- Cyberpunk: perspective grid canvas, CRT scanline overlay, medium neon glow on nodes
+- All themes use CSS custom property tokens (data-theme attribute on root)
+- SVG canvas gradient, cert node fills, and domain halos all theme-aware
+
+**Security & reliability**
+- API key in sessionStorage only — never in the file or repo
+- `anthropic-dangerous-direct-browser-access` header for direct browser API calls
+- Configurable model via CONFIG_DEFAULTS — single source of truth, no hardcoded strings
+- Auth errors auto-clear the stored key with actionable guidance
+- Model-not-found errors surface with link to Anthropic model docs
+- Dead/stale URL audit: eLearnSecurity/INE migration, OffSec domain rename (offsec.com), VMware/Broadcom acquisition, AccessData/Exterro acquisition
+
+**Dependencies**
+- D3.js 7.9.0 (cdnjs) — zoom and SVG manipulation
+- marked.js 9.1.6 (cdnjs) — markdown rendering
+- Google Fonts: Space Mono, DM Sans
+- Anthropic Messages API (claude-sonnet-4-5) — path planner only
 
 ---
 
