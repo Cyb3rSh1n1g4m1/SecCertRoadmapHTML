@@ -1152,17 +1152,17 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
       headers:{
         "Content-Type":"application/json",
         "x-api-key":apiKey,
-        "anthropic-version":"2023-06-01"
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
       },
       body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
         messages:[{role:"user",content:prompt}]})
     });
     const data=await resp.json();
     if(data.error){
-      // Handle auth errors specifically with helpful guidance
       if(data.error.type==="authentication_error"){
         clearKey();
-        throw new Error("Invalid API key. Key has been cleared — please re-enter a valid key from console.anthropic.com");
+        throw new Error("Invalid API key — cleared. Re-enter a valid key from console.anthropic.com");
       }
       throw new Error(data.error.message||"API error");
     }
@@ -1177,7 +1177,11 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
         "<span style=\"color:#4f8ef7;font-size:9px;letter-spacing:.1em\">$1</span>");
     pout.innerHTML=`<div class="roadmap-out">${formatted}</div>`;
   }catch(err){
-    pout.innerHTML=`<div class="err">⚠ ${err.message}</div>`;
+    // Distinguish CORS/network errors from API errors
+    const isCors=err instanceof TypeError&&err.message.includes("fetch");
+    pout.innerHTML=`<div class="err">⚠ ${isCors
+      ? "Network error — if running from a local file, open via a local server instead of double-clicking the file. Quick fix: run <code style='background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px'>npx serve .</code> in the project folder and open the localhost URL."
+      : err.message}</div>`;
   }finally{
     genBtn.disabled=false;genBtn.textContent="Regenerate ↗";
   }
