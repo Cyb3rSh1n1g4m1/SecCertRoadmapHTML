@@ -358,12 +358,24 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
           Never committed to the repo. Get a key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--ac)">console.anthropic.com</a>
         </div>
       </div>
+      <div class="fg" id="modelGroup">
+        <label class="flbl">Model <span style="color:var(--tx3);font-size:8px;text-transform:none;letter-spacing:0">(update if API rejects model name)</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" class="fi" id="fModel" placeholder="claude-sonnet-4-5" autocomplete="off" spellcheck="false" style="font-family:var(--mono);font-size:11px">
+          <button class="cbtn" id="modelSaveBtn" onclick="saveModel()" style="flex-shrink:0">Save</button>
+          <button class="cbtn dan" id="modelResetBtn" onclick="resetModel()" style="flex-shrink:0">Reset</button>
+        </div>
+        <div id="modelStatus" style="margin-top:4px;font-size:9px;font-family:var(--mono);color:var(--tx3)"></div>
+        <div style="margin-top:5px;font-size:9px;font-family:var(--mono);color:var(--tx3);line-height:1.6">
+          Current models: <a href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank" style="color:var(--ac)">docs.anthropic.com/en/docs/about-claude/models</a>
+        </div>
+      </div>
       <div class="pout" id="pout"></div>
     </div>
     <div class="mft">
       <button class="cbtn pri" id="genBtn" onclick="genPath()">Generate Roadmap ↗</button>
       <button class="cbtn" onclick="closeModal()">Cancel</button>
-      <span style="font-size:8px;font-family:var(--mono);color:var(--tx3);margin-left:auto">claude-sonnet-4-20250514</span>
+      <span style="font-size:8px;font-family:var(--mono);color:var(--tx3);margin-left:auto" id="modelLabel">claude-sonnet-4-5</span>
     </div>
   </div>
 </div>
@@ -692,6 +704,16 @@ const LVC=["#70AD47","#fa8e36","#3a7bd5","#d05050"];
 const LVK=["beginner","intermediate","advanced","expert"];
 function cc(c){if(c.domain==="ops")return c.subcat==="red"?"#d05050":"#3a7bd5";return DM[c.domain]?.c||"#888"}
 function lvi(l){return LVK.indexOf(l)}
+
+// ── CONFIG — edit model here or update it at runtime via the planner modal ──
+const CONFIG_KEY="scr_config";
+const CONFIG_DEFAULTS={model:"claude-sonnet-4-5"};
+function loadConfig(){
+  try{const s=sessionStorage.getItem(CONFIG_KEY);return s?{...CONFIG_DEFAULTS,...JSON.parse(s)}:CONFIG_DEFAULTS;}
+  catch(e){return CONFIG_DEFAULTS;}
+}
+function saveConfig(cfg){try{sessionStorage.setItem(CONFIG_KEY,JSON.stringify(cfg));}catch(e){}}
+let CONFIG=loadConfig();
 
 let aD="all",aL="all",aSC="all",sq="",foc=false,maxCost=5000;
 const cmpSet=new Map();
@@ -1085,6 +1107,47 @@ function syncKeyUI(){
   }
 }
 
+// MODEL MANAGEMENT
+function saveModel(){
+  const val=document.getElementById("fModel").value.trim();
+  if(!val){setModelStatus("Enter a model string first","var(--co)");return;}
+  CONFIG={...CONFIG,model:val};
+  saveConfig(CONFIG);
+  syncModelLabel();
+  setModelStatus("✓ Model updated to: "+val,"#70AD47");
+  document.getElementById("modelSaveBtn").textContent="Saved";
+  setTimeout(()=>document.getElementById("modelSaveBtn").textContent="Save",2000);
+}
+
+function resetModel(){
+  CONFIG={...CONFIG,model:CONFIG_DEFAULTS.model};
+  saveConfig(CONFIG);
+  document.getElementById("fModel").value=CONFIG_DEFAULTS.model;
+  syncModelLabel();
+  setModelStatus("Reset to default: "+CONFIG_DEFAULTS.model,"var(--tx3)");
+}
+
+function setModelStatus(msg,color){
+  const el=document.getElementById("modelStatus");
+  if(el){el.textContent=msg;el.style.color=color||"var(--tx3)";}
+}
+
+function syncModelLabel(){
+  // Update the footer label in the modal to reflect current model
+  const lbl=document.getElementById("modelLabel");
+  if(lbl) lbl.textContent=CONFIG.model;
+}
+
+function syncModelUI(){
+  document.getElementById("fModel").value=CONFIG.model;
+  syncModelLabel();
+  if(CONFIG.model!==CONFIG_DEFAULTS.model){
+    setModelStatus("Using custom model: "+CONFIG.model,"var(--ac)");
+  } else {
+    setModelStatus("","var(--tx3)");
+  }
+}
+
 // MODAL / PLANNER
 function openModal(){
   if(cmpSet.size===0)return;
@@ -1100,6 +1163,7 @@ function openModal(){
   document.getElementById("genBtn").disabled=false;
   document.getElementById("genBtn").textContent="Generate Roadmap ↗";
   syncKeyUI();
+  syncModelUI();
   document.getElementById("mov").classList.add("open");
 }
 function closeModal(){document.getElementById("mov").classList.remove("open");}
@@ -1155,7 +1219,7 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
         "anthropic-version":"2023-06-01",
         "anthropic-dangerous-direct-browser-access":"true"
       },
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
+      body:JSON.stringify({model:CONFIG.model,max_tokens:1000,
         messages:[{role:"user",content:prompt}]})
     });
     const data=await resp.json();
@@ -1164,7 +1228,12 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
         clearKey();
         throw new Error("Invalid API key — cleared. Re-enter a valid key from console.anthropic.com");
       }
-      throw new Error(data.error.message||"API error");
+      // Model not found — guide user to the model field
+      const msg=data.error.message||"";
+      if(msg.toLowerCase().includes("model")||data.error.type==="not_found_error"){
+        throw new Error("Model \""+CONFIG.model+"\" was not found. Update the Model field below the API key with the current model name from docs.anthropic.com/en/docs/about-claude/models");
+      }
+      throw new Error(msg||"API error ("+data.error.type+")");
     }
     const text=data.content?.map(b=>b.text||"").join("")||"";
     if(!text)throw new Error("Empty response from API");
