@@ -182,6 +182,33 @@ body{display:flex;flex-direction:column}
 .nc rect{transition:filter .08s,stroke-width .08s}
 .nc:hover rect,.nc:hover ellipse{filter:brightness(1.5) drop-shadow(0 0 5px currentColor)}
 .nc.sel rect,.nc.sel ellipse{stroke-width:2.5!important}
+/* ── CONTEXT MENU ── */
+.ctx{position:fixed;z-index:500;background:var(--surface);border:1px solid var(--br2);
+  border-radius:6px;padding:4px 0;min-width:190px;box-shadow:0 8px 32px rgba(0,0,0,.6);
+  font-size:11px;display:none}
+.ctx.show{display:block}
+.ctx-cert{padding:7px 14px 3px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx);border-bottom:1px solid var(--br);margin-bottom:3px}
+.ctx-item{padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;
+  color:var(--tx2);font-family:var(--mono);font-size:10px;white-space:nowrap;transition:background .08s}
+.ctx-item:hover{background:var(--sf2);color:var(--tx)}
+.ctx-item svg{width:12px;height:12px;stroke:currentColor;fill:none;flex-shrink:0;stroke-width:2}
+.ctx-item.danger:hover{color:#d05050}
+.ctx-div{height:1px;background:var(--br);margin:3px 0}
+/* URL in tooltip */
+.tt-url{display:block;margin-top:6px;padding-top:5px;border-top:1px solid var(--br2);
+  font-size:9px;font-family:var(--mono);color:var(--ac);cursor:pointer;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:all}
+.tt-url:hover{color:#7ab4ff;text-decoration:underline}
+/* COST FILTER */
+.cost-wrap{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.cost-lbl{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.cost-val{font-family:var(--mono);font-size:9px;color:var(--tx2);white-space:nowrap;min-width:40px;text-align:right}
+input#costRange{-webkit-appearance:none;appearance:none;width:72px;height:3px;
+  background:var(--br2);border-radius:2px;outline:none;cursor:pointer}
+input#costRange::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
+  border-radius:50%;background:var(--ac);cursor:pointer;border:none}
+input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
+  background:var(--ac);cursor:pointer;border:none}
 </style>
 </head>
 <body>
@@ -224,6 +251,12 @@ body{display:flex;flex-direction:column}
   </div>
   <div class="td"></div>
   <button class="fb" id="focBtn" onclick="toggleFocus()">DECLUTTER</button>
+  <div class="td"></div>
+  <div class="cost-wrap">
+    <span class="cost-lbl">Max&nbsp;Cost</span>
+    <input type="range" id="costRange" min="0" max="5000" step="50" value="5000">
+    <span class="cost-val" id="costVal">Any</span>
+  </div>
   <button class="clr" id="clr">reset</button>
   <div class="cnt" id="cnt">— certs</div>
   <button class="cmpbtn" id="cmpbtn" onclick="toggleTray()">COMPARE (<span id="cmpn">0</span>)</button>
@@ -255,7 +288,25 @@ body{display:flex;flex-direction:column}
     <div class="leg-r"><div class="leg-d" style="background:#3a7bd5"></div>Blue Team</div>
     <div class="leg-r"><div class="leg-d" style="background:#d05050"></div>Red Team</div>
   </div>
-  <div class="hint">Scroll = zoom · Drag = pan<br>Click = select · / = search<br>DECLUTTER = key certs only</div>
+  <div class="hint">Scroll = zoom · Drag = pan<br>Click = select · Dbl-click = open site<br>Right-click = options · / = search</div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx" id="ctx">
+  <div class="ctx-cert" id="ctxLabel">—</div>
+  <div class="ctx-item" id="ctxOpen">
+    <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    Open certification page
+  </div>
+  <div class="ctx-div"></div>
+  <div class="ctx-item" id="ctxToggle">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Add to compare tray
+  </div>
+  <div class="ctx-item danger" id="ctxClear" style="display:none">
+    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+    Remove from tray
+  </div>
 </div>
 
 <!-- COMPARE TRAY -->
@@ -642,17 +693,30 @@ const LVK=["beginner","intermediate","advanced","expert"];
 function cc(c){if(c.domain==="ops")return c.subcat==="red"?"#d05050":"#3a7bd5";return DM[c.domain]?.c||"#888"}
 function lvi(l){return LVK.indexOf(l)}
 
-let aD="all",aL="all",aSC="all",sq="",foc=false;
+let aD="all",aL="all",aSC="all",sq="",foc=false,maxCost=5000;
 const cmpSet=new Map();
 let trayOpen=false;
 let W=0,H=0;
 function dims(){const r=document.getElementById("cw").getBoundingClientRect();W=r.width;H=r.height}
+
+// Parse cost from tip string — looks for $NNN or $N,NNN patterns
+function parseCost(tip){
+  if(!tip)return 0;
+  const m=tip.match(/\$(\d[\d,]*)/);
+  if(!m)return 0;
+  return parseInt(m[1].replace(/,/g,""))||0;
+}
 
 function vis(c){
   if(aD!=="all"&&c.domain!==aD)return false;
   if(aL!=="all"&&c.level!==aL)return false;
   if(aSC!=="all"&&c.domain==="ops"&&c.subcat!==aSC)return false;
   if(foc&&!c.key)return false;
+  if(maxCost<5000){
+    const cost=parseCost(c.tip);
+    if(cost>0&&cost>maxCost)return false;
+    // If cost is 0/unknown and filter is active, still show (cost unknown = don't exclude)
+  }
   if(sq){const q=sq.toLowerCase();return c.label.toLowerCase().includes(q)||(c.tip||"").toLowerCase().includes(q)}
   return true;
 }
@@ -780,6 +844,8 @@ function buildMap(){
         }
 
         ng.on("click",(e)=>{e.stopPropagation();togCmp(cert);})
+          .on("dblclick",(e)=>{e.stopPropagation();if(cert.url)window.open(cert.url,"_blank","noopener,noreferrer");})
+          .on("contextmenu",(e)=>{e.preventDefault();e.stopPropagation();showCtx(e,cert);})
           .on("mouseenter",(e)=>showTT(e,cert))
           .on("mouseleave",hideTT);
       });
@@ -803,12 +869,15 @@ function showTT(e,cert){
   const lvColors=["#70AD47","#fa8e36","#3a7bd5","#d05050"];
   const li=lvi(cert.level);
   const sel=cmpSet.has(cert.id);
+  const cost=parseCost(cert.tip);
+  const costStr=cost>0?` · $${cost.toLocaleString()}`:"";
   tt.innerHTML=`<div class="ttn">${cert.label}</div>
-<div class="ttd" style="color:${color}">${meta.label||cert.domain}${cert.subcat?" · "+cert.subcat.toUpperCase():""}</div>
+<div class="ttd" style="color:${color}">${meta.label||cert.domain}${cert.subcat?" · "+cert.subcat.toUpperCase():""}${costStr}</div>
 <div class="ttb">${(cert.tip||"").replace(cert.label,"").trim()}</div>
 <span class="ttlv" style="background:${lvColors[li]||"#555"};color:${li<=1?"#111":"#fff"}">${cert.level}</span>
-${cert.dead?'<div class="ttdead">⚠ URL may be outdated</div>':""}
-<div class="tthint">${sel?"✓ In tray — click to remove":"Click to add to compare tray"}</div>`;
+${cert.dead?'<div class="ttdead">⚠ URL may be outdated — verify before clicking</div>':""}
+<div class="tthint">${sel?"✓ In tray — click to remove":"Click to select · Dbl-click to open site"}</div>
+${cert.url?`<a class="tt-url" href="${cert.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">↗ ${cert.url.replace(/https?:\/\//,"").split("/")[0]}</a>`:""}`;
   tt.classList.add("show");mvTT(e);
 }
 function mvTT(e){
@@ -817,8 +886,79 @@ function mvTT(e){
   if(y+200>window.innerHeight)y=e.clientY-200;
   tt.style.left=x+"px";tt.style.top=y+"px";
 }
-function hideTT(){tt.classList.remove("show")}
+function hideTT(){
+  // Small delay so clicks on .tt-url register before tooltip hides
+  setTimeout(()=>tt.classList.remove("show"),120);
+}
 document.addEventListener("mousemove",e=>{if(tt.classList.contains("show"))mvTT(e)});
+
+// CONTEXT MENU
+let ctxCert=null;
+const ctxEl=document.getElementById("ctx");
+
+function showCtx(e,cert){
+  ctxCert=cert;
+  hideTT();
+  document.getElementById("ctxLabel").textContent=cert.label;
+  // Update Open link item
+  const openItem=document.getElementById("ctxOpen");
+  if(cert.url){
+    openItem.style.display="flex";
+    openItem.querySelector("span")||openItem.childNodes[openItem.childNodes.length-1];
+  } else {
+    openItem.style.display="none";
+  }
+  // Toggle/Remove label
+  const toggleItem=document.getElementById("ctxToggle");
+  const clearItem=document.getElementById("ctxClear");
+  const inTray=cmpSet.has(cert.id);
+  toggleItem.querySelector("span")||null;
+  toggleItem.childNodes[toggleItem.childNodes.length-1].textContent=inTray?" Add to compare tray":" Add to compare tray";
+  if(inTray){
+    toggleItem.style.display="none";
+    clearItem.style.display="flex";
+  } else {
+    toggleItem.style.display="flex";
+    clearItem.style.display="none";
+  }
+  // Position menu — avoid viewport edge
+  let x=e.clientX+2, y=e.clientY+2;
+  if(x+200>window.innerWidth) x=e.clientX-200;
+  if(y+160>window.innerHeight) y=e.clientY-160;
+  ctxEl.style.left=x+"px";
+  ctxEl.style.top=y+"px";
+  ctxEl.classList.add("show");
+}
+
+function hideCtx(){ ctxEl.classList.remove("show"); ctxCert=null; }
+
+document.getElementById("ctxOpen").addEventListener("click",()=>{
+  if(ctxCert?.url) window.open(ctxCert.url,"_blank","noopener,noreferrer");
+  hideCtx();
+});
+document.getElementById("ctxToggle").addEventListener("click",()=>{
+  if(ctxCert){ togCmp(ctxCert); } hideCtx();
+});
+document.getElementById("ctxClear").addEventListener("click",()=>{
+  if(ctxCert){ togCmp(ctxCert); } hideCtx();
+});
+
+// Dismiss context menu on any outside click or Escape
+document.addEventListener("click",()=>hideCtx());
+document.addEventListener("contextmenu",()=>hideCtx());
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") hideCtx(); });
+// Prevent SVG canvas right-click from bubbling to document dismiss before menu shows
+document.getElementById("svg").addEventListener("contextmenu",e=>e.preventDefault());
+
+// COST FILTER
+const costRange=document.getElementById("costRange");
+const costValEl=document.getElementById("costVal");
+costRange.addEventListener("input",()=>{
+  maxCost=parseInt(costRange.value);
+  costValEl.textContent=maxCost>=5000?"Any":"$"+maxCost.toLocaleString();
+  costValEl.style.color=maxCost<5000?"var(--ac)":"var(--tx3)";
+  buildMap();chkClr();
+});
 
 // COMPARE
 function togCmp(cert){
@@ -838,7 +978,9 @@ function updTray(){
   cmpSet.forEach(cert=>{
     const color=cc(cert);const meta=DM[cert.domain]||{};
     const d=document.createElement("div");d.className="ctcd";d.style.borderColor=color;
-    d.innerHTML=`<div class="ctcd-l" style="color:${color}">${cert.label}</div>
+    d.innerHTML=`<div class="ctcd-l">
+  ${cert.url?`<a href="${cert.url}" target="_blank" rel="noopener noreferrer" style="color:${color};text-decoration:none" title="Open certification page">${cert.label} ↗</a>`:`<span style="color:${color}">${cert.label}</span>`}
+</div>
 <div class="ctcd-s">${meta.label||cert.domain}<br>${cert.level}${cert.subcat?" · "+cert.subcat.toUpperCase()+" team":""}<br>${cert.tip?.split("\n")[1]||""}</div>
 <button class="ctcd-x" onclick="remCmp('${cert.id}')">×</button>`;
     cards.insertBefore(d,empty);
@@ -865,11 +1007,14 @@ document.querySelectorAll(".fb[data-sc]").forEach(b=>b.addEventListener("click",
   buildMap();chkClr();
 }));
 document.getElementById("si").addEventListener("input",e=>{sq=e.target.value;buildMap();chkClr();});
-function chkClr(){document.getElementById("clr").classList.toggle("show",aD!=="all"||aL!=="all"||aSC!=="all"||sq||foc);}
+function chkClr(){document.getElementById("clr").classList.toggle("show",aD!=="all"||aL!=="all"||aSC!=="all"||sq||foc||maxCost<5000);}
 document.getElementById("clr").addEventListener("click",resetAll);
 function resetAll(){
-  aD="all";aL="all";aSC="all";sq="";foc=false;
+  aD="all";aL="all";aSC="all";sq="";foc=false;maxCost=5000;
   document.getElementById("si").value="";
+  document.getElementById("costRange").value=5000;
+  document.getElementById("costVal").textContent="Any";
+  document.getElementById("costVal").style.color="var(--tx3)";
   document.querySelectorAll(".fb[data-d]").forEach(b=>b.classList.toggle("on",b.dataset.d==="all"));
   document.querySelectorAll(".fb[data-l]").forEach(b=>b.classList.toggle("on",b.dataset.l==="all"));
   document.querySelectorAll(".fb[data-sc]").forEach(b=>b.classList.toggle("on",b.dataset.sc==="all"));
