@@ -207,20 +207,7 @@ body{display:flex;flex-direction:column}
 .ctcd-x:hover{color:var(--co)}
 .ctempty{color:var(--tx3);font-size:10px;font-family:var(--mono);padding:16px 0;text-align:center}
 /* ── MODAL ── */
-.mov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;
-  display:flex;align-items:center;justify-content:center;padding:20px;
-  opacity:0;pointer-events:none;transition:opacity .18s}
-.mov.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border:1px solid var(--br2);border-radius:10px;
-  width:100%;max-width:700px;max-height:88vh;display:flex;flex-direction:column;
-  overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7)}
-.mhd{padding:15px 18px 11px;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;gap:10px;flex-shrink:0}
-.mtl{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tx)}
-.msl{font-size:11px;color:var(--tx2);margin-top:2px}
-.mcl{margin-left:auto;background:none;border:none;color:var(--tx3);font-size:17px;cursor:pointer;padding:0 2px}
-.mcl:hover{color:var(--tx)}
-.mbd{padding:15px 18px;overflow-y:auto;flex:1}
-.mft{padding:11px 18px;border-top:1px solid var(--br);display:flex;gap:7px;align-items:center;flex-shrink:0}
+
 .flbl{font-size:9px;font-family:var(--mono);color:var(--tx2);text-transform:uppercase;
   letter-spacing:.08em;margin-bottom:4px;display:block}
 .fg{margin-bottom:12px}
@@ -405,8 +392,6 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
 .saved-act.pri:hover{filter:brightness(1.1)}
 .saved-empty{text-align:center;padding:40px 20px;font-family:var(--mono);
   font-size:10px;color:var(--tx3);line-height:1.8}
-/* ── MODAL HIDDEN (panel takes over) ── */
-.mov{display:none!important}
 </style>
 </head>
 <body>
@@ -549,8 +534,6 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
   </div>
 </div>
 
-<!-- LEGACY MODAL STUB (hidden, panel takes over) -->
-<div class="mov" id="mov"></div>
 
 <!-- SLIDE-OUT PANEL -->
 <div class="panel-overlay" id="panelOverlay">
@@ -650,9 +633,25 @@ input#costRange::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
   </div>
 </div>
 <div class="tt" id="tt"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script>
+// ── MARKED + DOMPURIFY CONFIG ────────────────────────────────────────────────
+// Configure marked once at startup. All marked.parse() calls go through
+// safeRender() which sanitizes output via DOMPurify before DOM insertion.
+if(typeof marked !== "undefined"){
+  marked.setOptions({breaks:true,gfm:true});
+}
+function safeRender(md){
+  if(!md) return "";
+  const raw = typeof marked !== "undefined" ? marked.parse(md) : md
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return typeof DOMPurify !== "undefined"
+    ? DOMPurify.sanitize(raw, {USE_PROFILES:{html:true}})
+    : raw;
+}
+
 const CERTS = [
   // ─── Network ───
   {id:"CCIE_Sec",label:"CCIE Sec",domain:"network",level:"expert",url:"https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/expert/ccie-security.html",tip:"Cisco Certified Implementation Expert — Security\n$2,050 hands-on lab + ~$12k travel est.",key:true},
@@ -1134,7 +1133,7 @@ code{font-family:'Space Mono';font-size:11px;background:${isDark?"#1a1d2a":"#e8e
 pre{background:${isDark?"#1a1d2a":"#e8ecf5"};padding:12px;border-radius:5px;overflow-x:auto}
 hr{border:none;border-top:1px solid ${isDark?"#22263a":"#dde2ee"};margin:16px 0}
 @media print{body{margin:20px;padding:0 20px}@page{margin:1.5cm}}
-</style></head><body>${marked.parse(lastRawMarkdown)}</body></html>`);
+</style></head><body>${safeRender(lastRawMarkdown)}</body></html>`);
   win.document.close();
   setTimeout(()=>{win.focus();win.print();},400);
   showToast("Print dialog opened");
@@ -1688,8 +1687,7 @@ Be direct and precise. Tailor to the stated background. No generic filler.`;
     // Store raw markdown for export
     lastRawMarkdown=text;
     // Render with marked.js
-    const rendered=typeof marked!=="undefined"?marked.parse(text):text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    document.getElementById("roadmapOut").innerHTML=rendered;
+    document.getElementById("roadmapOut").innerHTML=safeRender(text);
     document.getElementById("poutWrap").style.display="block";
     pout.className="pout";
     pout.innerHTML="";
@@ -1789,8 +1787,7 @@ function loadPlanIntoPanel(idx){
   if(!entry)return;
   lastRawMarkdown=entry.md;
   // Render in output area
-  document.getElementById("roadmapOut").innerHTML=
-    typeof marked!=="undefined"?marked.parse(entry.md):entry.md;
+  document.getElementById("roadmapOut").innerHTML=safeRender(entry.md);
   document.getElementById("poutWrap").style.display="block";
   document.getElementById("pout").className="pout";
   document.getElementById("pout").innerHTML="";
@@ -1825,9 +1822,6 @@ function deleteSavedPlan(idx){
   showToast("Plan deleted");
 }
 
-// Update saveRoadmap to refresh count
-const _origSaveRoadmap=saveRoadmap;
-// Override at end of script to call updateSavedCount after save
 
 // RESIZE
 const ro=new ResizeObserver(()=>buildMap());
