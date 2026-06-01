@@ -232,7 +232,6 @@ h1 em{font-style:normal;font-weight:600;color:var(--ac)}
 .skill-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .skill-lbl{font-family:var(--mono);font-size:11px;color:var(--tx3);width:76px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
 .skill-bar{flex:1;height:2px;background:var(--br);border-radius:1px;overflow:hidden}
-.skill-fill{height:100%;background:var(--ac);border-radius:1px}
 .contact-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--br);font-size:14px}
 .contact-row:last-child{border-bottom:none;padding-bottom:0}
 .contact-row a{color:var(--tx2);text-decoration:none;transition:color .1s;word-break:break-all}
@@ -281,6 +280,27 @@ footer{
 }
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
+/* ── EFFECT 1: TYPED TERMINAL ── */
+.prompt-cmd{overflow:hidden;white-space:nowrap}
+
+/* ── EFFECT 2: STAT COUNTERS ── */
+/* counters handled in JS */
+
+/* ── EFFECT 3: SVG LINE DRAW ── */
+.map-line{stroke-dasharray:220;stroke-dashoffset:220;animation:drawLine 1.4s ease forwards}
+.shin-line{stroke-dasharray:420;stroke-dashoffset:420;animation:drawLine 1.3s ease forwards}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+.map-node{opacity:0;animation:fadeNode .25s ease forwards}
+@keyframes fadeNode{to{opacity:1}}
+
+/* ── EFFECT 4: SCROLL REVEAL ── */
+.reveal-hidden{opacity:0;transform:translateY(30px);transition:opacity .55s ease,transform .55s ease}
+.reveal-visible{opacity:1;transform:translateY(0)}
+.proj-card{transition:border-color .15s,opacity .55s ease,transform .55s ease}
+
+/* ── SKILL BAR ANIMATION ── */
+.skill-fill{height:100%;background:var(--ac);border-radius:1px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
 /* RESPONSIVE */
 @media(max-width:720px){
   .hero{grid-template-columns:1fr}
@@ -320,7 +340,7 @@ footer{
   <section class="hero" aria-label="Introduction">
     <div class="hero-l">
       <div class="prompt" aria-hidden="true">
-        <span class="prompt-user">root@shinigami</span><span style="color:var(--tx3)">:~$</span>&nbsp;whoami<span class="blink">▌</span>
+        <span class="prompt-user">root@shinigami</span><span style="color:var(--tx3)">:~$</span>&nbsp;<span id="typedCmd" class="prompt-cmd"></span><span class="blink" id="typeCursor">▌</span>
       </div>
       <h1>Shaun Washington<br><em>Cybersecurity Analyst</em></h1>
       <div class="hero-role">// T2 SOC · CTI · THREAT INTELLIGENCE DEVELOPMENT</div>
@@ -337,9 +357,9 @@ footer{
     </div>
     <div class="hero-r">
       <div class="stat-row">
-        <div class="stat"><div class="stat-n">250+</div><div class="stat-l">Certs Mapped</div></div>
-        <div class="stat"><div class="stat-n">3 YRS</div><div class="stat-l">SOC Exp.</div></div>
-        <div class="stat"><div class="stat-n">T2→T3</div><div class="stat-l">Progression</div></div>
+        <div class="stat"><div class="stat-n" id="statCerts">0</div><div class="stat-l">Certs Mapped</div></div>
+        <div class="stat"><div class="stat-n" id="statYrs">0</div><div class="stat-l">SOC Exp.</div></div>
+        <div class="stat"><div class="stat-n" id="statProg">—</div><div class="stat-l">Progression</div></div>
       </div>
       <div class="status-card">
         <div class="status-hd"><div class="sdot" aria-hidden="true"></div>// CURRENTLY BUILDING</div>
@@ -356,20 +376,20 @@ footer{
     <div class="sec-hd" id="tools-heading">// ACTIVE PROJECTS</div>
     <div class="card-grid">
 
-      <article class="proj-card" aria-label="Security Cert Roadmap">
+      <article class="proj-card reveal-hidden" id="card1" aria-label="Security Cert Roadmap">
         <div class="card-accent" style="background:linear-gradient(90deg,var(--ac),var(--ac2))"></div>
         <div class="card-thumb" style="background:#0c0e15">
           <svg viewBox="0 0 380 148" width="100%" height="148" aria-hidden="true" focusable="false">
             <defs><radialGradient id="cg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#171c30"/><stop offset="100%" stop-color="#0c0e15"/></radialGradient></defs>
             <rect width="380" height="148" fill="url(#cg)"/>
-            <line x1="190" y1="74" x2="190" y2="22" stroke="#70AD47" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <line x1="190" y1="74" x2="312" y2="42" stroke="#9aa8c0" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <line x1="190" y1="74" x2="320" y2="108" stroke="#c05050" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <line x1="190" y1="74" x2="190" y2="126" stroke="#fa8e36" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <line x1="190" y1="74" x2="60" y2="108" stroke="#1aafaf" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <line x1="190" y1="74" x2="68" y2="42" stroke="#b06aff" stroke-width=".8" stroke-opacity=".4" stroke-dasharray="3,4"/>
-            <circle cx="190" cy="74" r="32" fill="#0c0e15" stroke="#2a3050" stroke-width="1.2"/>
-            <circle cx="190" cy="74" r="23" fill="none" stroke="#2a3050" stroke-width=".5" stroke-dasharray="2,4"/>
+            <line class="map-line" x1="190" y1="74" x2="190" y2="22" stroke="#70AD47" stroke-width="1" style="animation-delay:.05s"/>
+            <line class="map-line" x1="190" y1="74" x2="312" y2="42" stroke="#9aa8c0" stroke-width="1" style="animation-delay:.15s"/>
+            <line class="map-line" x1="190" y1="74" x2="320" y2="108" stroke="#c05050" stroke-width="1" style="animation-delay:.25s"/>
+            <line class="map-line" x1="190" y1="74" x2="190" y2="126" stroke="#fa8e36" stroke-width="1" style="animation-delay:.35s"/>
+            <line class="map-line" x1="190" y1="74" x2="60" y2="108" stroke="#1aafaf" stroke-width="1" style="animation-delay:.45s"/>
+            <line class="map-line" x1="190" y1="74" x2="68" y2="42" stroke="#b06aff" stroke-width="1" style="animation-delay:.55s"/>
+            <circle cx="190" cy="74" r="32" fill="#0c0e15" stroke="#2a3050" stroke-width="1.2" class="map-node" style="animation-delay:.65s"/>
+            <circle cx="190" cy="74" r="23" fill="none" stroke="#2a3050" stroke-width=".5" stroke-dasharray="2,4" class="map-node" style="animation-delay:.7s"/>
             <text x="190" y="71" text-anchor="middle" fill="#c8d4f0" font-size="8" font-family="Space Mono" font-weight="700" letter-spacing=".1em">SECURITY</text>
             <text x="190" y="81" text-anchor="middle" fill="#4f8ef7" font-size="7" font-family="Space Mono" letter-spacing=".12em">CERTS</text>
             <rect x="171" y="10" width="38" height="15" rx="2.5" fill="rgba(8,10,16,.92)" stroke="#70AD47" stroke-width=".8"/>
@@ -422,25 +442,25 @@ footer{
         </div>
       </article>
 
-      <article class="proj-card" aria-label="Shinigami Protocol">
+      <article class="proj-card reveal-hidden" id="card2" style="transition-delay:.12s" aria-label="Shinigami Protocol">
         <div class="card-accent" style="background:linear-gradient(90deg,var(--shin),var(--ac))"></div>
         <div class="card-thumb" style="background:#0a0010">
           <svg viewBox="0 0 380 148" width="100%" height="148" aria-hidden="true" focusable="false">
             <rect width="380" height="148" fill="#0a0010"/>
-            <line x1="190" y1="80" x2="60" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="108" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="155" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="190" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="225" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="272" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="190" y1="80" x2="320" y2="148" stroke="#6600cc" stroke-width=".5" opacity=".5"/>
-            <line x1="0" y1="80" x2="380" y2="80" stroke="#ff2d78" stroke-width="1" opacity=".6"/>
-            <rect x="24" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#ff2d78" stroke-width=".9"/>
-            <text x="72" y="32" text-anchor="middle" fill="#ff2d78" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle">MODULE_01</text>
-            <rect x="142" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#00ffe5" stroke-width=".9"/>
-            <text x="190" y="32" text-anchor="middle" fill="#00ffe5" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle">MODULE_02</text>
-            <rect x="260" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#ffe600" stroke-width=".9"/>
-            <text x="308" y="32" text-anchor="middle" fill="#ffe600" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle">MODULE_03</text>
+            <line class="shin-line" x1="190" y1="80" x2="60" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.05s"/>
+            <line class="shin-line" x1="190" y1="80" x2="108" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.15s"/>
+            <line class="shin-line" x1="190" y1="80" x2="155" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.2s"/>
+            <line class="shin-line" x1="190" y1="80" x2="190" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.25s"/>
+            <line class="shin-line" x1="190" y1="80" x2="225" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.3s"/>
+            <line class="shin-line" x1="190" y1="80" x2="272" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.35s"/>
+            <line class="shin-line" x1="190" y1="80" x2="320" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.4s"/>
+            <line class="shin-line" x1="0" y1="80" x2="380" y2="80" stroke="#ff2d78" stroke-width="1.2" style="animation-delay:.5s"/>
+            <rect x="24" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#ff2d78" stroke-width=".9" class="map-node" style="animation-delay:.65s"/>
+            <text x="72" y="32" text-anchor="middle" fill="#ff2d78" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle" class="map-node" style="animation-delay:.65s">MODULE_01</text>
+            <rect x="142" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#00ffe5" stroke-width=".9" class="map-node" style="animation-delay:.8s"/>
+            <text x="190" y="32" text-anchor="middle" fill="#00ffe5" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle" class="map-node" style="animation-delay:.8s">MODULE_02</text>
+            <rect x="260" y="20" width="96" height="24" rx="3" fill="#120020" stroke="#ffe600" stroke-width=".9" class="map-node" style="animation-delay:.95s"/>
+            <text x="308" y="32" text-anchor="middle" fill="#ffe600" font-size="8" font-family="Space Mono" font-weight="700" dominant-baseline="middle" class="map-node" style="animation-delay:.95s">MODULE_03</text>
             <rect x="24" y="52" width="96" height="18" rx="2" fill="#120020" stroke="#3d0070" stroke-width=".6"/>
             <text x="72" y="61" text-anchor="middle" fill="#6633aa" font-size="7" font-family="Space Mono" dominant-baseline="middle">THREAT ACTORS</text>
             <rect x="142" y="52" width="96" height="18" rx="2" fill="#120020" stroke="#3d0070" stroke-width=".6"/>
@@ -484,7 +504,7 @@ footer{
     <div class="sec-hd" id="about-heading">// OPERATOR PROFILE</div>
     <div class="about-grid">
 
-      <div class="about-cell about-full">
+      <div class="about-cell about-full reveal-hidden" id="revDossier">
         <div class="about-ttl">root@shinigami:~$ cat ./profile/dossier.txt</div>
         <div class="dossier">
           <span class="k">ROLE........:</span>&nbsp;<span class="v">T2 SOC Analyst (→ T3)</span><br>
@@ -502,17 +522,17 @@ footer{
         </div>
       </div>
 
-      <div class="about-cell">
+      <div class="about-cell reveal-hidden" id="revSkills" style="transition-delay:.12s">
         <div class="about-ttl">// Technical Depth</div>
-        <div class="skill-row"><div class="skill-lbl">Python</div><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
-        <div class="skill-row"><div class="skill-lbl">ATT&amp;CK</div><div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div></div>
-        <div class="skill-row"><div class="skill-lbl">Splunk</div><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
-        <div class="skill-row"><div class="skill-lbl">D3.js</div><div class="skill-bar"><div class="skill-fill" style="width:65%"></div></div></div>
-        <div class="skill-row"><div class="skill-lbl">PowerShell</div><div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div></div>
-        <div class="skill-row"><div class="skill-lbl">OpenCTI</div><div class="skill-bar"><div class="skill-fill" style="width:55%"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">Python</div><div class="skill-bar"><div class="skill-fill" data-w="75"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">ATT&amp;CK</div><div class="skill-bar"><div class="skill-fill" data-w="82"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">Splunk</div><div class="skill-bar"><div class="skill-fill" data-w="70"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">D3.js</div><div class="skill-bar"><div class="skill-fill" data-w="65"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">PowerShell</div><div class="skill-bar"><div class="skill-fill" data-w="60"></div></div></div>
+        <div class="skill-row"><div class="skill-lbl">OpenCTI</div><div class="skill-bar"><div class="skill-fill" data-w="55"></div></div></div>
       </div>
 
-      <div class="about-cell">
+      <div class="about-cell reveal-hidden" id="revContact" style="transition-delay:.24s">
         <div class="about-ttl">// Contact</div>
         <div class="contact-row">
           <span class="contact-key">GITHUB</span>
@@ -628,6 +648,78 @@ function showToast(msg){
 buildSwatches();
 applyTheme(cur);
 loadStatus();
+
+// ── EFFECT 1: TYPED TERMINAL ─────────────────────────────────────────────
+(function(){
+  const phrases=['whoami','ls -la ./projects/','cat ./profile/dossier.txt','whoami'];
+  let pi=0,ci=0,del=false;
+  const cmd=document.getElementById('typedCmd');
+  if(!cmd)return;
+  function tick(){
+    const phrase=phrases[pi%phrases.length];
+    if(!del){
+      cmd.textContent=phrase.slice(0,++ci);
+      if(ci===phrase.length){del=true;setTimeout(tick,pi===0?2000:1400);return;}
+      setTimeout(tick,80+Math.random()*45);
+    }else{
+      cmd.textContent=phrase.slice(0,--ci);
+      if(ci===0){del=false;pi++;setTimeout(tick,350);return;}
+      setTimeout(tick,38);
+    }
+  }
+  setTimeout(tick,700);
+})();
+
+// ── EFFECT 2: ANIMATED STAT COUNTERS ─────────────────────────────────────
+(function(){
+  function counter(el,target,suffix,duration){
+    const start=performance.now();
+    (function step(now){
+      const p=Math.min((now-start)/duration,1);
+      const ease=1-Math.pow(1-p,3);
+      el.textContent=Math.round(ease*target)+suffix;
+      if(p<1)requestAnimationFrame(step);
+    })(start);
+  }
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting)return;
+      const el=e.target;
+      if(el.id==='statCerts')counter(el,250,'+',1600);
+      if(el.id==='statYrs'){
+        setTimeout(()=>{el.textContent='3 YRS';},500);
+      }
+      if(el.id==='statProg'){
+        setTimeout(()=>{el.textContent='T2→T3';},900);
+      }
+      io.unobserve(el);
+    });
+  },{threshold:.3});
+  ['statCerts','statYrs','statProg'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)io.observe(el);
+  });
+})();
+
+// ── EFFECT 4: SCROLL REVEAL + EFFECT 3 (skill bars) ──────────────────────
+(function(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting)return;
+      e.target.classList.remove('reveal-hidden');
+      e.target.classList.add('reveal-visible');
+      if(e.target.id==='revSkills'){
+        setTimeout(()=>{
+          document.querySelectorAll('.skill-fill').forEach(b=>{
+            b.style.width=(b.dataset.w||'0')+'%';
+          });
+        },150);
+      }
+      io.unobserve(e.target);
+    });
+  },{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.reveal-hidden').forEach(el=>io.observe(el));
+})();
 </script>
 </body>
 </html>
