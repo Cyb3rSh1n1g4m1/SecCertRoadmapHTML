@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cyb3rSh1n1g4m1 // Intelligence Command Node</title>
-<meta name="description" content="Shaun Washington — Cybersecurity Analyst. CTI development, security tooling, threat intelligence. T2 SOC working toward T3.">
+<meta name="description" content="Shaun Washington — Cybersecurity Analyst. CTI development, security tooling, threat intelligence. Lead Threat Fusion Analyst (SOC Analyst III).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -95,42 +95,77 @@ nav{
 .tsw:hover,.tsw:focus{transform:scale(1.3);outline:none}
 .tsw[aria-pressed=true]{border-color:var(--tx);transform:scale(1.2)}
 
-/* HERO */
-.hero{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--br)}
-.hero-l{
-  padding:48px 32px;border-right:1px solid var(--br);
-  display:flex;flex-direction:column;justify-content:center;
+/* ── HERO — full-width asymmetric ── */
+.hero{padding:52px 32px 44px;border-bottom:1px solid var(--br)}
+.hero-top{
+  display:grid;grid-template-columns:1fr 420px;
+  gap:40px;align-items:start;margin-bottom:32px;
 }
 .prompt{
-  font-family:var(--mono);font-size:13px;color:var(--tx3);
-  letter-spacing:.08em;margin-bottom:12px;
+  font-family:var(--mono);font-size:12px;color:var(--tx3);
+  letter-spacing:.08em;margin-bottom:14px;
   display:flex;align-items:center;gap:4px;
 }
 .prompt-user{color:var(--ac);font-weight:700}
+.prompt-cmd{overflow:hidden;white-space:nowrap}
 .blink{animation:blink .9s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 h1{
-  font-size:44px;font-weight:300;letter-spacing:-.04em;
-  line-height:1.1;color:var(--tx);margin-bottom:6px;
+  font-size:62px;font-weight:300;letter-spacing:-.04em;
+  line-height:1.0;color:var(--tx);margin-bottom:8px;
 }
-h1 em{font-style:normal;font-weight:600;color:var(--ac)}
+h1 strong{font-weight:600;color:var(--ac);display:block}
+h1 em{display:none}
 .hero-role{
-  font-family:var(--mono);font-size:13px;color:var(--tx3);
+  font-family:var(--mono);font-size:12px;color:var(--tx3);
   letter-spacing:.12em;margin-bottom:18px;
 }
 .hero-bio{
   font-size:15px;color:var(--tx2);line-height:1.78;
-  margin-bottom:24px;max-width:480px;
+  margin-bottom:24px;max-width:520px;opacity:.9;
 }
 .hero-links{display:flex;gap:8px;flex-wrap:wrap}
-.hero-r{padding:32px;display:flex;flex-direction:column;gap:10px;justify-content:center}
-.stat-row{display:flex;gap:8px}
+
+/* TERMINAL SIGNATURE */
+.terminal{
+  background:#080010;border:1px solid var(--br2);border-radius:6px;
+  overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.4);
+}
+[data-theme=cyber] .terminal{box-shadow:0 0 40px rgba(255,45,120,.08)}
+[data-theme=light] .terminal{background:#f0eef8;border-color:var(--br2)}
+.term-hd{
+  background:var(--sf);border-bottom:1px solid var(--br);
+  padding:9px 14px;display:flex;align-items:center;gap:7px;
+}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-ttl{
+  font-family:var(--mono);font-size:9px;color:var(--tx3);
+  letter-spacing:.1em;margin-left:4px;
+}
+.term-body{
+  padding:14px 16px;min-height:172px;
+  font-family:var(--mono);font-size:11px;line-height:2;
+}
+.term-line{
+  display:flex;align-items:flex-start;gap:8px;
+  opacity:0;transition:opacity .15s;
+}
+.term-line.show{opacity:1}
+.term-p{color:var(--ac);flex-shrink:0}
+.term-cmd{color:var(--tx)}
+.term-out{color:var(--tx3);padding-left:16px}
+.term-out.ok{color:#39ff14}
+.term-out.warn{color:#ffe600}
+.term-idle{font-family:var(--mono);font-size:10px;color:var(--tx3);padding-left:0;opacity:.5}
+
+/* STAT STRIP */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .stat{
-  flex:1;background:var(--sf);border:1px solid var(--br);
-  border-radius:var(--r);padding:12px 14px;
+  background:var(--sf);border:1px solid var(--br);
+  border-radius:var(--r);padding:14px 16px;
 }
 .stat-n{
-  font-family:var(--mono);font-size:24px;font-weight:700;
+  font-family:var(--mono);font-size:22px;font-weight:700;
   color:var(--tx);letter-spacing:-.02em;
 }
 .stat-l{
@@ -142,17 +177,18 @@ h1 em{font-style:normal;font-weight:600;color:var(--ac)}
   border-radius:var(--r);padding:14px 16px;
 }
 .status-hd{
-  font-family:var(--mono);font-size:11px;color:var(--tx3);
+  font-family:var(--mono);font-size:10px;color:var(--tx3);
   text-transform:uppercase;letter-spacing:.16em;
   margin-bottom:8px;display:flex;align-items:center;gap:7px;
 }
 .sdot{
   width:6px;height:6px;border-radius:50%;background:var(--ac);
-  flex-shrink:0;animation:blink 1.8s infinite;
+  flex-shrink:0;animation:sdot-pulse 2s ease infinite;
 }
-.status-body{font-size:14px;color:var(--tx2);line-height:1.65;margin-bottom:10px}
+@keyframes sdot-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.status-body{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:10px}
 .edit-btn{
-  font-family:var(--mono);font-size:11px;font-weight:700;
+  font-family:var(--mono);font-size:10px;font-weight:700;
   letter-spacing:.1em;padding:4px 10px;border-radius:3px;
   border:1px solid var(--br2);background:transparent;
   color:var(--tx3);cursor:pointer;transition:all .1s;
@@ -191,7 +227,7 @@ h1 em{font-style:normal;font-weight:600;color:var(--ac)}
 .proj-card:hover{border-color:var(--br2)}
 .card-accent{height:2px}
 .card-thumb{
-  height:148px;overflow:hidden;
+  height:220px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
 }
 .card-body{padding:18px 20px}
@@ -207,6 +243,15 @@ h1 em{font-style:normal;font-weight:600;color:var(--ac)}
 .card-feats{font-family:var(--mono);font-size:12px;color:var(--tx3);line-height:2;margin-bottom:14px}
 .card-foot{display:flex;align-items:center;gap:8px}
 .card-upd{font-family:var(--mono);font-size:11px;color:var(--br2);margin-left:auto}
+.proj-card.card-wide{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr}
+.card-wide .card-accent{grid-column:1/-1}
+.card-wide .card-thumb{height:auto;min-height:220px;background:#0a0e1f}
+.card-wide .card-thumb img{width:100%;height:100%;object-fit:cover;object-position:50% 68%;display:block;transform:scale(1.4);transform-origin:50% 68%}
+@media(max-width:860px){
+  .proj-card.card-wide{grid-column:auto;display:block}
+  .card-wide .card-thumb{height:220px}
+  .card-wide .card-thumb img{transform:none}
+}
 
 /* ABOUT */
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -280,6 +325,50 @@ footer{
 }
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
+/* ── THEME ATMOSPHERICS ── */
+/* Dark — dot grid */
+[data-theme=dark] body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+/* Light — hairline grid */
+[data-theme=light] body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:linear-gradient(rgba(91,33,182,.04) 1px,transparent 1px),
+             linear-gradient(90deg,rgba(91,33,182,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+/* DEFCON — amber scanlines */
+[data-theme=defcon] body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:repeating-linear-gradient(0deg,rgba(255,102,0,.03) 0px,rgba(255,102,0,.03) 1px,transparent 1px,transparent 4px);
+}
+/* Dracula — purple radial vignette */
+[data-theme=dracula] body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(40,10,60,.55) 100%);
+}
+/* Cyber — glow on nav logo */
+[data-theme=cyber] .nav-logo{text-shadow:0 0 20px rgba(255,45,120,.3)}
+[data-theme=cyber] .nav-logo span{text-shadow:0 0 12px rgba(255,45,120,.6)}
+
+/* ── CARD HOVER LIFT ── */
+.proj-card{
+  transition:border-color .15s,transform .18s ease,box-shadow .18s ease,opacity .55s ease;
+}
+.proj-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+[data-theme=cyber] .proj-card:hover{box-shadow:0 12px 40px rgba(255,45,120,.12)}
+
+/* ── REDUCED MOTION ── */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal-hidden,.rh{opacity:1!important;transform:none!important}
+}
+
 /* ── EFFECT 1: TYPED TERMINAL ── */
 .prompt-cmd{overflow:hidden;white-space:nowrap}
 
@@ -302,18 +391,25 @@ footer{
 .skill-fill{height:100%;background:var(--ac);border-radius:1px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
 
 /* RESPONSIVE */
+@media(max-width:860px){
+  .hero-top{grid-template-columns:1fr}
+  .terminal{display:none}
+  h1{font-size:44px}
+  .stat-strip{grid-template-columns:1fr 1fr 1fr}
+  .status-card{grid-column:span 3}
+}
 @media(max-width:720px){
-  .hero{grid-template-columns:1fr}
-  .hero-l{border-right:none;border-bottom:1px solid var(--br);padding:32px 20px}
-  .hero-r{padding:20px}
+  .hero{padding:32px 20px 28px}
+  h1{font-size:36px}
+  .stat-strip{grid-template-columns:1fr 1fr}
+  .status-card{grid-column:span 2}
   .card-grid{grid-template-columns:1fr}
   .about-grid{grid-template-columns:1fr}
   .about-full{grid-column:span 1}
   .cert-chips{margin-left:0;display:flex;margin-top:4px}
-  .section,.hero-l,.hero-r{padding-left:20px;padding-right:20px}
+  .section{padding-left:20px;padding-right:20px}
   nav{padding:0 20px}
   footer{padding:14px 20px}
-  h1{font-size:34px}
   .nav-r a:not(.nav-logo){display:none}
   .swatches{display:flex!important}
 }
@@ -336,35 +432,59 @@ footer{
 
 <main id="main">
 
-  <!-- HERO -->
+  <!-- HERO — full-width asymmetric -->
   <section class="hero" aria-label="Introduction">
-    <div class="hero-l">
-      <div class="prompt" aria-hidden="true">
-        <span class="prompt-user">root@shinigami</span><span style="color:var(--tx3)">:~$</span>&nbsp;<span id="typedCmd" class="prompt-cmd"></span><span class="blink" id="typeCursor">▌</span>
+    <div class="hero-top">
+      <!-- NAME BLOCK -->
+      <div class="hero-name-block">
+        <div class="prompt" aria-hidden="true">
+          <span class="prompt-user">root@shinigami</span><span style="color:var(--tx3)">:~$</span>&nbsp;<span id="typedCmd" class="prompt-cmd"></span><span class="blink" id="typeCursor">▌</span>
+        </div>
+        <h1>Shaun <strong>Washington</strong></h1>
+        <div class="hero-role">// LEAD THREAT FUSION ANALYST · SOC III · CTI</div>
+        <p class="hero-bio">
+          Building structured Cyber Threat Intelligence capabilities and open security tooling.
+          3 years in detection, triage, and incident handling. Now a SOC Analyst III leading
+          threat fusion. Focus on adversary profiling, ATT&amp;CK mapping, intelligence automation,
+          and detection engineering.
+        </p>
+        <div class="hero-links">
+          <a href="https://github.com/Cyb3rSh1n1g4m1" target="_blank" rel="noopener" class="btn btn-pri">[GITHUB ↗]</a>
+          <a href="https://www.linkedin.com/in/shaun-washington-8a428240/" target="_blank" rel="noopener" class="btn btn-sec">[LINKEDIN ↗]</a>
+          <a href="mailto:shaun.washington@protonmail.com" class="btn btn-sec">[EMAIL ↗]</a>
+        </div>
       </div>
-      <h1>Shaun Washington<br><em>Cybersecurity Analyst</em></h1>
-      <div class="hero-role">// T2 SOC · CTI · THREAT INTELLIGENCE DEVELOPMENT</div>
-      <p class="hero-bio">
-        Building structured Cyber Threat Intelligence capabilities and open security tooling.
-        3 years in detection, triage, and incident handling — working toward T3. Focus on
-        adversary profiling, ATT&amp;CK mapping, intelligence automation, and detection engineering.
-      </p>
-      <div class="hero-links">
-        <a href="https://github.com/Cyb3rSh1n1g4m1" target="_blank" rel="noopener" class="btn btn-pri">[GITHUB ↗]</a>
-        <a href="https://www.linkedin.com/in/shaun-washington-8a428240/" target="_blank" rel="noopener" class="btn btn-sec">[LINKEDIN ↗]</a>
-        <a href="mailto:shaun.washington@proton.me" class="btn btn-sec">[EMAIL ↗]</a>
+      <!-- TERMINAL SIGNATURE -->
+      <div class="terminal" id="terminalBox" role="presentation" aria-hidden="true">
+        <div class="term-hd">
+          <div class="term-dot" style="background:#ff5f57"></div>
+          <div class="term-dot" style="background:#febc2e"></div>
+          <div class="term-dot" style="background:#28c840"></div>
+          <span class="term-ttl">threat-intel-session — bash</span>
+        </div>
+        <div class="term-body">
+          <div class="term-line" id="tl0"><span class="term-out warn">initializing threat-intel session...</span></div>
+          <div class="term-line" id="tl1"><span class="term-p">▶</span><span class="term-cmd">query threat-actor --id APT29 --format brief</span></div>
+          <div class="term-line" id="tl2"><span class="term-out">[ COZY BEAR ] Russian SVR. Active since 2008.</span></div>
+          <div class="term-line" id="tl3"><span class="term-p">▶</span><span class="term-cmd">map techniques T1078 T1133 T1486 T1566</span></div>
+          <div class="term-line" id="tl4"><span class="term-out">[ 4 techniques ] Initial Access · Persistence · Impact</span></div>
+          <div class="term-line" id="tl5"><span class="term-p">▶</span><span class="term-cmd">cross-ref campaign DARKSIDE-2021 --iocs</span></div>
+          <div class="term-line" id="tl6"><span class="term-out">[ 47 IOCs ] 12 IPs · 22 domains · 13 hashes</span></div>
+          <div class="term-line" id="tl7"><span class="term-p">▶</span><span class="term-cmd">generate profile --confidence-score</span></div>
+          <div class="term-line" id="tl8"><span class="term-out ok">[ PROFILE COMPLETE ] Confidence: HIGH (0.91) ✓</span></div>
+          <div class="term-line show" id="tl9" style="opacity:.4"><span class="term-idle">hover to replay</span></div>
+        </div>
       </div>
     </div>
-    <div class="hero-r">
-      <div class="stat-row">
-        <div class="stat"><div class="stat-n" id="statCerts">0</div><div class="stat-l">Certs Mapped</div></div>
-        <div class="stat"><div class="stat-n" id="statYrs">0</div><div class="stat-l">SOC Exp.</div></div>
-        <div class="stat"><div class="stat-n" id="statProg">—</div><div class="stat-l">Progression</div></div>
-      </div>
+    <!-- STAT STRIP — full width below hero -->
+    <div class="stat-strip">
+      <div class="stat"><div class="stat-n" id="statCerts">0</div><div class="stat-l">Certs Mapped</div></div>
+      <div class="stat"><div class="stat-n">3 YRS</div><div class="stat-l">SOC Experience</div></div>
+      <div class="stat"><div class="stat-n">T3</div><div class="stat-l">Current Tier</div></div>
       <div class="status-card">
         <div class="status-hd"><div class="sdot" aria-hidden="true"></div>// CURRENTLY BUILDING</div>
         <div class="status-body" id="statusTxt">
-          Shinigami Protocol Phase 1 — Threat actor dossiers, campaign reconstruction framework, and IOC enrichment CLI tooling.
+          Shinigami Protocol Phase 1 — Threat actor dossiers, campaign reconstruction framework, AI enabled TI intel aggregator/scorer and IOC enrichment CLI tooling.
         </div>
         <button class="edit-btn" onclick="openModal()" aria-label="Edit current status">[EDIT STATUS]</button>
       </div>
@@ -379,7 +499,7 @@ footer{
       <article class="proj-card reveal-hidden" id="card1" aria-label="Security Cert Roadmap">
         <div class="card-accent" style="background:linear-gradient(90deg,var(--ac),var(--ac2))"></div>
         <div class="card-thumb" style="background:#0c0e15">
-          <svg viewBox="0 0 380 148" width="100%" height="148" aria-hidden="true" focusable="false">
+          <svg viewBox="0 0 380 220" width="100%" height="220" aria-hidden="true" focusable="false">
             <defs><radialGradient id="cg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#171c30"/><stop offset="100%" stop-color="#0c0e15"/></radialGradient></defs>
             <rect width="380" height="148" fill="url(#cg)"/>
             <line class="map-line" x1="190" y1="74" x2="190" y2="22" stroke="#70AD47" stroke-width="1" style="animation-delay:.05s"/>
@@ -437,7 +557,7 @@ footer{
           <div class="card-foot">
             <a href="./security-cert-mindmap.html" class="btn btn-pri">[LAUNCH ↗]</a>
             <a href="https://github.com/Cyb3rSh1n1g4m1/SecCertRoadmapHTML" target="_blank" rel="noopener" class="btn btn-sec">[SOURCE]</a>
-            <span class="card-upd">Updated May 2025</span>
+            <span class="card-upd">Updated Oct 2026</span>
           </div>
         </div>
       </article>
@@ -445,8 +565,8 @@ footer{
       <article class="proj-card reveal-hidden" id="card2" style="transition-delay:.12s" aria-label="Shinigami Protocol">
         <div class="card-accent" style="background:linear-gradient(90deg,var(--shin),var(--ac))"></div>
         <div class="card-thumb" style="background:#0a0010">
-          <svg viewBox="0 0 380 148" width="100%" height="148" aria-hidden="true" focusable="false">
-            <rect width="380" height="148" fill="#0a0010"/>
+          <svg viewBox="0 0 380 220" width="100%" height="220" aria-hidden="true" focusable="false">
+            <rect width="380" height="220" fill="#0a0010"/>
             <line class="shin-line" x1="190" y1="80" x2="60" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.05s"/>
             <line class="shin-line" x1="190" y1="80" x2="108" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.15s"/>
             <line class="shin-line" x1="190" y1="80" x2="155" y2="148" stroke="#6600cc" stroke-width=".8" style="animation-delay:.2s"/>
@@ -499,6 +619,42 @@ footer{
     </div>
   </section>
 
+  <!-- SIDE PROJECTS -->
+  <section class="section" id="side-projects" aria-labelledby="side-heading">
+    <div class="sec-hd" id="side-heading">// SIDE PROJECTS · FOR FUN</div>
+    <div class="card-grid">
+
+      <article class="proj-card card-wide reveal-hidden" id="card3" aria-label="Cybershinigami">
+        <div class="card-accent" style="background:linear-gradient(90deg,var(--ac2),var(--shin))"></div>
+        <div class="card-thumb">
+          <img src="./assets/cybershinigami-banner.png" width="2416" height="1602" loading="lazy" decoding="async" alt="Cybershinigami: the reaper under the torii, in ASCII">
+        </div>
+        <div class="card-body">
+          <div class="card-id">PROJECT_03 // SIDE QUEST</div>
+          <div class="card-top">
+            <div class="card-name">CYBERSHINIGAMI</div>
+            <span class="badge badge-wip" role="status">◐ BUILDING</span>
+          </div>
+          <div class="card-tags">
+            <span class="ctag">GODOT 4.5</span><span class="ctag">MICROPYTHON</span>
+            <span class="ctag">SPRITES</span><span class="ctag">GAME DEV</span>
+          </div>
+          <p class="card-desc">A sprite-based Metroidvania built in Godot 4.5 where enemies and bosses mirror real security threats and fall to their real-world defences. Includes a MicroPython port for the GitHub Universe 2025 badge, running on a Pimoroni Tufty 2350.</p>
+          <div class="card-feats">
+            &gt; threats as enemies · defences as the kill condition<br>
+            &gt; art pipelines: sprite slicing · effects · procedural sfx<br>
+            &gt; badge port: micropython on tufty 2350
+          </div>
+          <div class="card-foot">
+            <a href="https://github.com/Cyb3rSh1n1g4m1/cybershinigami-Metroidvania" target="_blank" rel="noopener" class="btn btn-shin">[VIEW SOURCE ↗]</a>
+            <span class="card-upd">Side project · just for fun</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section class="section" id="about" aria-labelledby="about-heading">
     <div class="sec-hd" id="about-heading">// OPERATOR PROFILE</div>
@@ -507,14 +663,16 @@ footer{
       <div class="about-cell about-full reveal-hidden" id="revDossier">
         <div class="about-ttl">root@shinigami:~$ cat ./profile/dossier.txt</div>
         <div class="dossier">
-          <span class="k">ROLE........:</span>&nbsp;<span class="v">T2 SOC Analyst (→ T3)</span><br>
+          <span class="k">ROLE........:</span>&nbsp;<span class="v">Lead Threat Fusion Analyst (SOC Analyst III)</span><br>
           <span class="k">EXPERIENCE..:</span>&nbsp;<span class="v">3 years · Detection · Triage · Incident handling · Escalation</span><br>
           <span class="k">CERTS.......:</span>&nbsp;<div class="cert-chips" role="list" aria-label="Certifications">
             <span class="cc cc-have" role="listitem">CC</span>
             <span class="cc cc-have" role="listitem">Security+</span>
             <span class="cc cc-have" role="listitem">CySA+</span>
             <span class="cc cc-have" role="listitem">CHFI</span>
-            <span class="cc cc-study" role="listitem">Pentest+ ← studying</span>
+            <span class="cc cc-have" role="listitem">Qualys VMDR</span>
+            <span class="cc cc-have" role="listitem">OneTrust GRC Professional</span>
+            <span class="cc cc-have" role="listitem">arcX CTI Analyst</span>
           </div><br>
           <span class="k">PURSUING....:</span>&nbsp;<span class="v">GCTI · CTIA</span><br>
           <span class="k">FOCUS.......:</span>&nbsp;<span class="v">CTI · Adversary Profiling · ATT&amp;CK Mapping · Automation · Detection Eng.</span><br>
@@ -649,6 +807,25 @@ buildSwatches();
 applyTheme(cur);
 loadStatus();
 
+// ── TERMINAL SIGNATURE — run once, hover to replay ───────────────────────
+(function(){
+  const ids=[0,1,2,3,4,5,6,7,8];
+  const ms=[0,350,850,1150,1700,2000,2600,2900,3400];
+  let tmrs=[];
+  function run(){
+    ids.forEach(i=>{const el=document.getElementById('tl'+i);if(el)el.classList.remove('show');});
+    tmrs.forEach(clearTimeout);tmrs=[];
+    ids.forEach(i=>{
+      tmrs.push(setTimeout(()=>{
+        const el=document.getElementById('tl'+i);if(el)el.classList.add('show');
+      },ms[i]));
+    });
+  }
+  run();
+  const box=document.getElementById('terminalBox');
+  if(box)box.addEventListener('mouseenter',run);
+})();
+
 // ── EFFECT 1: TYPED TERMINAL ─────────────────────────────────────────────
 (function(){
   const phrases=['whoami','ls -la ./projects/','cat ./profile/dossier.txt','whoami'];
@@ -686,16 +863,11 @@ loadStatus();
       if(!e.isIntersecting)return;
       const el=e.target;
       if(el.id==='statCerts')counter(el,250,'+',1600);
-      if(el.id==='statYrs'){
-        setTimeout(()=>{el.textContent='3 YRS';},500);
-      }
-      if(el.id==='statProg'){
-        setTimeout(()=>{el.textContent='T2→T3';},900);
-      }
+      // statYrs and statProg are now static text in the new layout
       io.unobserve(el);
     });
   },{threshold:.3});
-  ['statCerts','statYrs','statProg'].forEach(id=>{
+  ['statCerts'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)io.observe(el);
   });
